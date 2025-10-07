@@ -1,0 +1,127 @@
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model Carousel {
+    id String @id @unique @default(uuid()) 
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    images String @unique
+    title String?
+    content String?
+    url String
+}
+
+model Category {
+    id String @id @unique @default(uuid()) 
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    name String @unique
+
+    product Product[]
+}
+
+model Mass{
+    id String @id @unique @default(uuid()) 
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    value Int @unique
+
+    productMass ProductMass[]
+}
+
+model ProductMass {
+    id String @id @unique @default(uuid()) 
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    price Int
+    discount Float
+
+    productId String
+    product Product @relation(fields: [productId], references: [id])
+    massId String
+    mass Mass @relation(fields: [massId], references: [id])
+
+    orderItems OrderItem[]
+    
+}
+
+model Product {
+    id String @id @unique @default(uuid()) 
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    label String
+    images String[]
+
+    categoryId String
+    category Category @relation(fields: [categoryId], references: [id])
+
+    productMass ProductMass[]
+}
+
+model Notion {
+    id String @id @unique @default(uuid()) 
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    title String
+    content String
+}
+
+model Description {
+    id String @id @unique @default(uuid()) 
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    title String
+    image String?
+    content String
+}
+
+model Order {
+    id String @id @unique @default(uuid()) 
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    name String
+    phone String
+    address String
+    email String?
+
+    orderItems OrderItem[]
+}
+
+model OrderItem {
+    id String @id @unique @default(uuid()) 
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    quantity Int
+    status OrderStatus @default(PENDING)
+
+    orderId String
+    order Order @relation(fields: [orderId], references: [id])
+
+    productMassId String
+    productMass ProductMass @relation(fields: [productMassId], references: [id])
+}
+
+enum OrderStatus {
+    PENDING
+    PROCESSING
+    SHIPPED
+    DELIVERED
+    CANCELED
+}
