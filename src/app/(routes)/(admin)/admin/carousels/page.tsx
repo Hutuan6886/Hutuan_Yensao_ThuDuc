@@ -1,16 +1,18 @@
 import React from "react";
 import LabelAndCreateBtn from "@/components/admin/LabelOfPage/LabelAndCreateBtn";
 import CarouselsList from "./_components/CarouselsList";
+import { CarouselType } from "@/types";
 
-const CarouselsPage = () => {
+const data: CarouselType[] = [];
+const CarouselsPage = async () => {
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-16">
       <LabelAndCreateBtn
         label="Danh Sách Ảnh Bìa"
         btnName="Thêm ảnh bìa"
-        // btnFunc={() => {}}
+        btnHref="/admin/carousels/new"
       />
-      <CarouselsList />
+      <CarouselsList data={data} />
     </div>
   );
 };

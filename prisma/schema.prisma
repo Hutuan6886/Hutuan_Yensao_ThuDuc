@@ -13,11 +13,11 @@ model Carousel {
     id String @id @unique @default(uuid()) 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
-
-    images String @unique
-    title String?
-    content String?
+    
     url String
+
+    imageId String @unique
+    image Image @relation("CarouselImage",fields: [imageId], references: [id],onDelete: Cascade)
 }
 
 model Category {
@@ -49,9 +49,9 @@ model ProductMass {
     discount Float
 
     productId String
-    product Product @relation(fields: [productId], references: [id])
+    product Product @relation(fields: [productId], references: [id],onDelete: Cascade)
     massId String
-    mass Mass @relation(fields: [massId], references: [id])
+    mass Mass @relation(fields: [massId], references: [id],onDelete: Cascade)
 
     orderItems OrderItem[]
     
@@ -63,12 +63,16 @@ model Product {
     updatedAt DateTime @updatedAt
 
     label String
-    images String[]
+
+    images Image[] @relation("ProductImages")
 
     categoryId String
-    category Category @relation(fields: [categoryId], references: [id])
+    category Category @relation(fields: [categoryId], references: [id],onDelete: Cascade)
 
     productMass ProductMass[]
+
+    notion Notion[]
+    description Description[]
 }
 
 model Notion {
@@ -78,6 +82,9 @@ model Notion {
 
     title String
     content String
+
+    productId String
+    product Product @relation(fields:[productId],references: [id],onDelete: Cascade)
 }
 
 model Description {
@@ -86,8 +93,29 @@ model Description {
     updatedAt DateTime @updatedAt
 
     title String
-    image String?
+
+    imageId String? @unique
+    image Image? @relation("ProductDescriptionImage", fields:[imageId],references: [id],onDelete:Cascade )
+    
     content String
+
+    productId String
+    product Product @relation(fields:[productId],references: [id],onDelete: Cascade)
+}
+model Image {
+    id String @id @unique @default(uuid()) 
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    href String @unique
+    alt String
+
+    carousel Carousel? @relation("CarouselImage")
+
+    productId String
+    product Product @relation("ProductImages",fields: [productId], references: [id], onDelete: Cascade)
+
+    description Description? @relation("ProductDescriptionImage")
 }
 
 model Order {
@@ -112,10 +140,10 @@ model OrderItem {
     status OrderStatus @default(PENDING)
 
     orderId String
-    order Order @relation(fields: [orderId], references: [id])
+    order Order @relation(fields: [orderId], references: [id],onDelete: Cascade)
 
     productMassId String
-    productMass ProductMass @relation(fields: [productMassId], references: [id])
+    productMass ProductMass @relation(fields: [productMassId], references: [id],onDelete: Cascade)
 }
 
 enum OrderStatus {

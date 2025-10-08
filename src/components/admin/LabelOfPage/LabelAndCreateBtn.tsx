@@ -1,16 +1,20 @@
+"use client";
 import React from "react";
+import { useRouter } from "next/navigation";
 import { Plus } from "lucide-react";
 
 interface LabelAndCreateBtnProps {
   label: string;
   btnName: string;
-  btnFunc?: () => void;
+  btnHref: string;
 }
 const LabelAndCreateBtn: React.FC<LabelAndCreateBtnProps> = ({
   label,
   btnName,
-  btnFunc,
+  btnHref,
 }) => {
+  const router = useRouter();
+  const btnFunc = () => router.push(btnHref);
   return (
     <div className="flex flex-row items-center justify-between">
       <h1 className="text-3xl font-semibold">{label}</h1>

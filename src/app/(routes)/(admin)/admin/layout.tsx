@@ -6,7 +6,7 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
     <LayoutContainer>
       <Navbar className="fixed top-0 left-1/2 -translate-x-1/2" />
-      <div className="mt-[100px]">{children}</div>
+      <div className="mt-[80px]">{children}</div>
     </LayoutContainer>
   );
 }

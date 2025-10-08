@@ -17,9 +17,9 @@ const MainNav = ({ data }: MainNavProps) => {
           key={i}
           href={nav.href}
           className={`${
-            pathname === nav.href
-              ? "text-orange-800 border-b-2 border-b-gray400"
-              : "text-black hover:text-orange-400"
+            nav.action
+              ? "text-orange-800 border-b-2 border-b-orange-800"
+              : "text-black hover:text-orange-600"
           } font-normal transition p-5`}
         >
           {nav.label}
