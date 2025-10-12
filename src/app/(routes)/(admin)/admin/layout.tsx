@@ -1,10 +1,12 @@
 import React from "react";
+import { Toaster } from "react-hot-toast";
 import LayoutContainer from "@/components/admin/Containers/LayoutContainer";
 import Navbar from "@/components/admin/Navbar";
 
 function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
     <LayoutContainer>
+      <Toaster position="bottom-right" reverseOrder={false} />
       <Navbar className="fixed top-0 left-1/2 -translate-x-1/2" />
       <div className="mt-[80px]">{children}</div>
     </LayoutContainer>

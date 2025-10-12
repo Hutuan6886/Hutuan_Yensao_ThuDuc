@@ -1,9 +1,9 @@
 "use client";
 import React from "react";
+import { usePathname } from "next/navigation";
+import { cn } from "@/libs/utils";
 import LogoNav from "./LogoNav";
 import MainNav from "./MainNav";
-import { cn } from "@/utils/mergeClass";
-import { usePathname } from "next/navigation";
 
 interface DasboardNavbarProps {
   className: string;

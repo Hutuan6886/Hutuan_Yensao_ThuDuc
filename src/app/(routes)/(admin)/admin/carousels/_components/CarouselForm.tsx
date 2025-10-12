@@ -4,6 +4,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
+import { CarouselFormSchema } from "../_form_schema";
+import { createCarousel, updateCarousel } from "@/services/carousel";
+
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -16,27 +19,41 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { ImageUploader } from "@/components/ui/ImageUploader";
-const CarouselForm = () => {
-  const CarouselFormSchema = z.object({
-    image: z.object({
-      href: z.string(),
-      alt: z.string(),
-    }),
-    url: z.string(),
-  });
+import { useRouter } from "next/navigation";
+import { CarouselType } from "@/types";
+
+interface CarouselFormProps {
+  formData: CarouselType | null;
+}
+
+const CarouselForm: React.FC<CarouselFormProps> = ({ formData }) => {
+  const router = useRouter();
   const carouselForm = useForm<z.infer<typeof CarouselFormSchema>>({
     resolver: zodResolver(CarouselFormSchema),
-    defaultValues: {
-      image: {
-        href: "",
-        alt: "",
-      },
-      url: "",
-    },
+    defaultValues: !formData
+      ? {
+          image: {
+            href: "",
+            alt: "",
+          },
+          url: "#",
+        }
+      : {
+          image: {
+            href: formData.image.href,
+            alt: formData.image.alt,
+          },
+          url: formData.url,
+        },
   });
-
-  const onSubmit = (data: z.infer<typeof CarouselFormSchema>) => {
-    console.log("Carousel Form", data);
+  const onSubmit = async (data: z.infer<typeof CarouselFormSchema>) => {
+    if (!formData) {
+      await createCarousel(data).finally(() => router.push("/admin/carousels"));
+    } else {
+      await updateCarousel(formData.id, data).finally(() =>
+        router.push("/admin/carousels")
+      );
+    }
   };
   return (
     <Form {...carouselForm}>
@@ -77,7 +94,7 @@ const CarouselForm = () => {
           )}
         />
         <Button type="submit" className="cursor-pointer">
-          Tạo Mới
+          {formData ? "Cập nhật" : "Tạo mới"}
         </Button>
       </form>
     </Form>

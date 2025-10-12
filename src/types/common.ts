@@ -86,7 +86,7 @@ export type ImageType = {
 
   //   carousel?: CarouselType;
 
-  //   productId: string;
-  //   product: ProductType;
-  //   description: ProductDescriptionType;
+  //   productId?: string;
+  //   product?: ProductType;
+  //   description?: ProductDescriptionType;
 };

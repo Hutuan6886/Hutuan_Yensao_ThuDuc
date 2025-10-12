@@ -1,8 +1,11 @@
 "use client";
-import { useRef, useState } from "react";
+import { useState } from "react";
 import Image from "next/image";
+import { deleteImage, uploadImage } from "@/libs/r2-client";
 import { Input } from "@/components/ui/input";
 import { CloudUpload } from "lucide-react";
+import { useClickTrigger } from "@/hooks/useClickTrigger";
+import CloseButton from "./CloseButton";
 
 export function ImageUploader({
   value,
@@ -13,38 +16,38 @@ export function ImageUploader({
 }) {
   const [preview, setPreview] = useState(value?.href || "");
   const [uploading, setUploading] = useState(false);
-  const uploadRef = useRef<HTMLInputElement>(null);
+  const { ref: uploadRef, trigger: openUpload } =
+    useClickTrigger<HTMLInputElement>();
+
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
     // Hiển thị preview local
     setPreview(URL.createObjectURL(file));
-    // setUploading(true);
+    setUploading(true);
 
     // Gửi file đến API upload (đến Cloudflare hoặc Cloudinary)
-    // const formData = new FormData();
-    // formData.append("file", file);
+    const url: string = await uploadImage("carousels", file);
 
-    // const res = await fetch("/api/upload", {
-    //   method: "POST",
-    //   body: formData,
-    // });
-
-    // const data = await res.json();
-    // setUploading(false);
-
-    // if (data.url) {
-    //   // Gửi kết quả ra ngoài cho form
-    //   onUploaded(data.url, file.name); //* Upload giá trị image từ cloudflare trả về
-    // } else {
-    //   console.error("Upload failed", data);
-    // }
+    if (url) {
+      // Gửi kết quả ra ngoài cho form
+      onUploaded(url, `Đây là ảnh bìa ${file.name} cửa hàng Yến Sào Thủ Đức`);
+      setUploading(false);
+    } else {
+      console.error("Upload image failed", url);
+    }
   };
 
-  const openUpload = () => {
-    if (uploadRef.current) {
-      uploadRef.current.click();
+  const handleFileDelete = async (url: string) => {
+    // Delete in Cloudflare
+    const res = await deleteImage(url);
+    if (res.valueOf()) {
+      // Delete image field
+      onUploaded("", "");
+      setPreview("");
+    } else {
+      console.error("Delete image failed");
     }
   };
 
@@ -52,13 +55,19 @@ export function ImageUploader({
     <div className="space-y-2">
       {uploading && <p className="text-sm text-gray-500">Đang upload...</p>}
       {preview || value?.href ? (
-        <Image
-          src={preview || (value?.href as string)}
-          alt={value?.alt || "Preview"}
-          width={1200}
-          height={900}
-          className="w-full h-auto"
-        />
+        <div className="relative">
+          <Image
+            src={preview || (value?.href as string)}
+            alt={value?.alt || "Preview"}
+            width={1200}
+            height={900}
+            className="w-full h-auto"
+          />
+          <CloseButton
+            className="absolute top-2 right-2"
+            closeFunc={() => handleFileDelete(value?.href as string)}
+          />
+        </div>
       ) : (
         <div
           className="relative w-full h-auto rounded-md border-2 border-dashed border-zinc-300 p-5 cursor-pointer"

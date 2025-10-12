@@ -17,7 +17,7 @@ model Carousel {
     url String
 
     imageId String @unique
-    image Image @relation("CarouselImage",fields: [imageId], references: [id],onDelete: Cascade)
+    image Image @relation("CarouselImage",fields: [imageId], references: [id])
 }
 
 model Category {
@@ -112,8 +112,8 @@ model Image {
 
     carousel Carousel? @relation("CarouselImage")
 
-    productId String
-    product Product @relation("ProductImages",fields: [productId], references: [id], onDelete: Cascade)
+    productId String?
+    product Product? @relation("ProductImages",fields: [productId], references: [id], onDelete: Cascade)
 
     description Description? @relation("ProductDescriptionImage")
 }
