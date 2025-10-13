@@ -22,14 +22,19 @@ export const uploadImage = async (
   }
 };
 
-export const deleteImage = async (url: string): Promise<boolean> => {
+export const deleteImage = async (
+  url: string,
+  signal?: AbortSignal
+): Promise<boolean> => {
   try {
+    if (signal?.aborted) return false;
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_HOISTING_URL}/api/admin/cloudflare`,
       {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ url }),
+        signal,
       }
     );
     const data = await res.json();

@@ -18,8 +18,8 @@ const MainNav = ({ data }: MainNavProps) => {
           href={nav.href}
           className={`${
             nav.action
-              ? "text-orange-800 border-b-2 border-b-orange-800"
-              : "text-black hover:text-orange-600"
+              ? "text-[#BA691B] border-b-2 border-b-[#BA691B]"
+              : "text-black hover:text-[#cc8747]"
           } font-normal transition p-5`}
         >
           {nav.label}

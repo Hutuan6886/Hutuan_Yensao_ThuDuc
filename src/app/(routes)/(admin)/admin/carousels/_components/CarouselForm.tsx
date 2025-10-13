@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -27,6 +27,7 @@ interface CarouselFormProps {
 }
 
 const CarouselForm: React.FC<CarouselFormProps> = ({ formData }) => {
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const router = useRouter();
   const carouselForm = useForm<z.infer<typeof CarouselFormSchema>>({
     resolver: zodResolver(CarouselFormSchema),
@@ -47,14 +48,15 @@ const CarouselForm: React.FC<CarouselFormProps> = ({ formData }) => {
         },
   });
   const onSubmit = async (data: z.infer<typeof CarouselFormSchema>) => {
-    if (!formData) {
+    setIsLoading(true);
+    if (!formData)
       await createCarousel(data).finally(() => router.push("/admin/carousels"));
-    } else {
+    else
       await updateCarousel(formData.id, data).finally(() =>
         router.push("/admin/carousels")
       );
-    }
   };
+
   return (
     <Form {...carouselForm}>
       <form
@@ -62,6 +64,7 @@ const CarouselForm: React.FC<CarouselFormProps> = ({ formData }) => {
         className="flex flex-col gap-8"
       >
         <FormField
+          disabled={isLoading}
           control={carouselForm.control}
           name="url"
           render={({ field }) => (
@@ -70,13 +73,18 @@ const CarouselForm: React.FC<CarouselFormProps> = ({ formData }) => {
                 Đường dẫn điều hướng cho ảnh bìa:
               </FormLabel>
               <FormControl>
-                <Input type="text" {...field} />
+                <Input
+                  type="text"
+                  placeholder="https://domain.com/user/..."
+                  {...field}
+                />
               </FormControl>
+              <FormMessage />
             </FormItem>
           )}
         />
-        {/*Image -----------------------------------------*/}
         <FormField
+          disabled={isLoading}
           control={carouselForm.control}
           name="image"
           render={({ field }) => (
@@ -90,10 +98,15 @@ const CarouselForm: React.FC<CarouselFormProps> = ({ formData }) => {
                   }}
                 />
               </FormControl>
+              {carouselForm.formState.errors.image?.href && (
+                <p className="text-sm font-medium text-destructive">
+                  {carouselForm.formState.errors.image?.href?.message}
+                </p>
+              )}
             </FormItem>
           )}
         />
-        <Button type="submit" className="cursor-pointer">
+        <Button disabled={isLoading} type="submit" className="cursor-pointer">
           {formData ? "Cập nhật" : "Tạo mới"}
         </Button>
       </form>

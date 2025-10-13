@@ -6,6 +6,9 @@ import { Input } from "@/components/ui/input";
 import { CloudUpload } from "lucide-react";
 import { useClickTrigger } from "@/hooks/useClickTrigger";
 import CloseButton from "./CloseButton";
+import { usePopup } from "@/stores/pop-up/usePopup";
+import Popup from "./Popup";
+import useLoading from "@/hooks/useLoading";
 
 export function ImageUploader({
   value,
@@ -18,6 +21,12 @@ export function ImageUploader({
   const [uploading, setUploading] = useState(false);
   const { ref: uploadRef, trigger: openUpload } =
     useClickTrigger<HTMLInputElement>();
+  const {
+    content: { title, message, submitPopup },
+    isPopupOpen,
+    setPopupOpen,
+    closePopup,
+  } = usePopup((state) => state);
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -39,56 +48,72 @@ export function ImageUploader({
     }
   };
 
-  const handleFileDelete = async (url: string) => {
+  const handleFileDelete = async (url: string, signal?: AbortSignal) => {
     // Delete in Cloudflare
-    const res = await deleteImage(url);
+    const res = await deleteImage(url, signal);
     if (res.valueOf()) {
       // Delete image field
       onUploaded("", "");
       setPreview("");
-    } else {
-      console.error("Delete image failed");
     }
   };
+  const { isLoading, run, cancelRequest } = useLoading(handleFileDelete);
 
   return (
-    <div className="space-y-2">
-      {uploading && <p className="text-sm text-gray-500">Đang upload...</p>}
-      {preview || value?.href ? (
-        <div className="relative">
-          <Image
-            src={preview || (value?.href as string)}
-            alt={value?.alt || "Preview"}
-            width={1200}
-            height={900}
-            className="w-full h-auto"
-          />
-          <CloseButton
-            className="absolute top-2 right-2"
-            closeFunc={() => handleFileDelete(value?.href as string)}
-          />
-        </div>
-      ) : (
-        <div
-          className="relative w-full h-auto rounded-md border-2 border-dashed border-zinc-300 p-5 cursor-pointer"
-          onClick={openUpload}
-        >
-          <Input
-            ref={uploadRef}
-            type="file"
-            accept="image/*"
-            onChange={handleFileChange}
-            className="absolute top-0 left-0 invisible"
-          />
-          <div className="flex flex-col items-center justify-center gap-2 p-2">
-            <CloudUpload className="size-20 text-sky-300" />
-            <p className="text-xl text-sky-800 font-semibold">
-              Nhấn vào đây để tải lên hình ảnh.
-            </p>
-            <p className=" text-zinc-300">.JPG, .PNG</p>
+    <>
+      <Popup
+        isLoading={isLoading}
+        title={title}
+        message={message}
+        isOpen={isPopupOpen}
+        submitFunc={submitPopup}
+        closeFunc={() => {
+          cancelRequest();
+          closePopup();
+        }}
+      />
+      <div className="space-y-2">
+        {uploading && <p className="text-sm text-gray-500">Đang upload...</p>}
+        {preview || value?.href ? (
+          <div className="relative">
+            <Image
+              src={preview || (value?.href as string)}
+              alt={value?.alt || "Preview"}
+              width={1200}
+              height={900}
+              className="w-full h-auto"
+            />
+            <CloseButton
+              className="absolute top-2 right-2"
+              closeFunc={() =>
+                setPopupOpen({
+                  title: "Bạn muốn xóa ảnh này?",
+                  message: "Ảnh này sẽ bị xóa vĩnh viễn",
+                  submitPopup: async () => run(value?.href as string),
+                })
+              }
+            />
           </div>
-        </div>
-      )}
-    </div>
+        ) : (
+          <div
+            className="relative w-full h-auto rounded-md border-2 border-dashed bg-blue-50 border-blue-800 p-5 cursor-pointer"
+            onClick={openUpload}
+          >
+            <Input
+              ref={uploadRef}
+              type="file"
+              accept="image/*"
+              onChange={handleFileChange}
+              className="absolute top-0 left-0 invisible"
+            />
+            <div className="flex flex-col items-center justify-center gap-2 p-2">
+              <CloudUpload className="size-25 text-blue-800" />
+              <p className="text-xl text-blue-800 font-light">Nhấn vào đây</p>
+              <p className="text-xs">.JPG, .PNG</p>
+            </div>
+          </div>
+        )}
+      </div>
+    </>
   );
 }

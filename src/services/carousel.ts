@@ -72,13 +72,18 @@ export async function updateCarousel(
   }
 }
 
-export async function deleteCarousel(id: string): Promise<boolean> {
+export async function deleteCarousel(
+  id: string,
+  signal?: AbortSignal
+): Promise<boolean> {
   try {
+    if (signal?.aborted) return false;
     const res = await fetch(`/api/admin/carousels/${id}`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
       },
+      signal,
     });
     if (!res.ok) {
       toast.error("Xóa ảnh bìa thất bại", {
