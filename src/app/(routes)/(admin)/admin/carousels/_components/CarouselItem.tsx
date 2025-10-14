@@ -3,7 +3,7 @@ import React from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 
-import { CarouselType } from "@/types";
+import { CarouselWithImage } from "@/types";
 import { deleteCarousel } from "@/services/carousel";
 import { useCopyClipboard } from "@/hooks/useCopyClipboard";
 import useLoading from "@/hooks/useLoading";
@@ -15,7 +15,7 @@ import Popup from "@/components/ui/Popup";
 
 interface CarouselItemProps {
   index: number;
-  data: CarouselType;
+  data: CarouselWithImage;
 }
 const CarouselItem: React.FC<CarouselItemProps> = ({ index, data }) => {
   const router = useRouter();

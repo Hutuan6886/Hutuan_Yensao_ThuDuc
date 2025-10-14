@@ -1,19 +1,19 @@
 import React from "react";
-import { prisma } from "@/libs/db";
+import { getCarouselById } from "@/servers/carousel";
+import { CarouselWithImage } from "@/types";
 import CarouselForm from "../_components/CarouselForm";
-import { CarouselType } from "@/types";
-import { unstable_noStore as noStore } from "next/cache";
 
-const CarouselPage = async ({ params }: { params: { carouselId: string } }) => {
-  noStore();
-  const data: CarouselType | null = await prisma.carousel.findFirst({
-    where: { id: params.carouselId },
-    include: { image: true },
-  });
+const CarouselPage = async ({
+  params,
+}: {
+  params: Promise<{ carouselId: string }>;
+}) => {
+  const { carouselId } = await params;
+  const data: CarouselWithImage | null = await getCarouselById(carouselId);
   return (
     <div className="flex flex-col gap-16">
       <h1 className="text-3xl font-semibold">Chỉnh sửa ảnh bìa</h1>
-      <CarouselForm formData={data} />
+      <CarouselForm carouselData={data} />
     </div>
   );
 };

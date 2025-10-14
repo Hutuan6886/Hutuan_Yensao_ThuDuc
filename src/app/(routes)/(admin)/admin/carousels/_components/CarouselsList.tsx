@@ -1,8 +1,8 @@
 import React from "react";
+import { CarouselWithImage } from "@/types";
 import CarouselItem from "./CarouselItem";
-import { CarouselType } from "@/types";
 
-const CarouselsList = ({ data }: { data: CarouselType[] }) => {
+const CarouselsList = ({ data }: { data: CarouselWithImage[] }) => {
   return (
     <div className="flex flex-col gap-16">
       {data.map((carousel, i) => (

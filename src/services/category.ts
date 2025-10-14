@@ -1,12 +1,10 @@
 import z from "zod";
-import { CarouselFormSchema } from "@/app/(routes)/(admin)/admin/carousels/_form_schema";
+import { categoryFormSchema } from "@/app/(routes)/(admin)/admin/categories/_form_schema";
 import toast from "react-hot-toast";
 
-export async function createCarousel(
-  data: z.infer<typeof CarouselFormSchema>
-): Promise<JSON> {
+export async function createCategory(data: z.infer<typeof categoryFormSchema>) {
   try {
-    const res = await fetch(`/api/admin/carousels`, {
+    const res = await fetch(`/api/admin/categories`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -14,7 +12,7 @@ export async function createCarousel(
       body: JSON.stringify(data),
     });
     if (!res.ok) {
-      toast.error("Thêm mới ảnh bìa thất bại", {
+      toast.error("Thêm mới danh mục thất bại", {
         style: {
           border: "1px solid #713200",
           padding: "16px",
@@ -23,7 +21,7 @@ export async function createCarousel(
       });
       throw new Error("Failed to create carousel");
     }
-    toast.success("Thêm mới ảnh bìa thành công", {
+    toast.success("Thêm mới danh mục thành công", {
       style: {
         border: "1px solid #713200",
         padding: "16px",
@@ -36,12 +34,12 @@ export async function createCarousel(
   }
 }
 
-export async function updateCarousel(
+export async function updateCategory(
   id: string,
-  data: z.infer<typeof CarouselFormSchema>
+  data: z.infer<typeof categoryFormSchema>
 ): Promise<JSON> {
   try {
-    const res = await fetch(`/api/admin/carousels/${id}`, {
+    const res = await fetch(`/api/admin/categories/${id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -49,7 +47,7 @@ export async function updateCarousel(
       body: JSON.stringify(data),
     });
     if (!res.ok) {
-      toast.error("Cập nhật ảnh bìa thất bại", {
+      toast.error("Cập nhật danh mục thất bại", {
         style: {
           border: "1px solid #713200",
           padding: "16px",
@@ -58,26 +56,28 @@ export async function updateCarousel(
       });
       throw new Error("Failed to update carousel");
     }
-    toast.success("Cập nhật ảnh bìa thành công", {
+    toast.success("Cập nhật danh mục thành công", {
       style: {
         border: "1px solid #713200",
         padding: "16px",
         color: "#713200",
       },
     });
-    return res.json();
+    const categoryUpdated = await res.json();
+    console.log("category update", categoryUpdated);
+    return categoryUpdated;
   } catch (error) {
     throw error;
   }
 }
 
-export async function deleteCarousel(
+export async function deleteCategory(
   id: string,
   signal?: AbortSignal
 ): Promise<boolean> {
   try {
     if (signal?.aborted) return false;
-    const res = await fetch(`/api/admin/carousels/${id}`, {
+    const res = await fetch(`/api/admin/categories/${id}`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
@@ -85,7 +85,7 @@ export async function deleteCarousel(
       signal,
     });
     if (!res.ok) {
-      toast.error("Xóa ảnh bìa thất bại", {
+      toast.error("Xóa danh mục thất bại", {
         style: {
           border: "1px solid #713200",
           padding: "16px",
@@ -94,7 +94,7 @@ export async function deleteCarousel(
       });
       throw new Error("Failed to delete carousel");
     }
-    toast.success("Xóa ảnh bìa thành công", {
+    toast.success("Xóa danh mục thành công", {
       style: {
         border: "1px solid #713200",
         padding: "16px",

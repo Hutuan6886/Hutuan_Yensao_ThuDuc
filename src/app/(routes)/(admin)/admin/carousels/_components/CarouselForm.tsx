@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -20,18 +20,18 @@ import {
 import { Input } from "@/components/ui/input";
 import { ImageUploader } from "@/components/ui/ImageUploader";
 import { useRouter } from "next/navigation";
-import { CarouselType } from "@/types";
+import { CarouselWithImage } from "@/types";
+import useLoading from "@/hooks/useLoading";
 
 interface CarouselFormProps {
-  formData: CarouselType | null;
+  carouselData: CarouselWithImage | null;
 }
 
-const CarouselForm: React.FC<CarouselFormProps> = ({ formData }) => {
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+const CarouselForm: React.FC<CarouselFormProps> = ({ carouselData }) => {
   const router = useRouter();
   const carouselForm = useForm<z.infer<typeof CarouselFormSchema>>({
     resolver: zodResolver(CarouselFormSchema),
-    defaultValues: !formData
+    defaultValues: !carouselData
       ? {
           image: {
             href: "",
@@ -41,26 +41,26 @@ const CarouselForm: React.FC<CarouselFormProps> = ({ formData }) => {
         }
       : {
           image: {
-            href: formData.image.href,
-            alt: formData.image.alt,
+            href: carouselData.image.href,
+            alt: carouselData.image.alt,
           },
-          url: formData.url,
+          url: carouselData.url,
         },
   });
   const onSubmit = async (data: z.infer<typeof CarouselFormSchema>) => {
-    setIsLoading(true);
-    if (!formData)
+    if (!carouselData)
       await createCarousel(data).finally(() => router.push("/admin/carousels"));
     else
-      await updateCarousel(formData.id, data).finally(() =>
+      await updateCarousel(carouselData.id, data).finally(() =>
         router.push("/admin/carousels")
       );
   };
+  const { isLoading, run } = useLoading(onSubmit);
 
   return (
     <Form {...carouselForm}>
       <form
-        onSubmit={carouselForm.handleSubmit(onSubmit)}
+        onSubmit={carouselForm.handleSubmit(run)}
         className="flex flex-col gap-8"
       >
         <FormField
@@ -107,7 +107,7 @@ const CarouselForm: React.FC<CarouselFormProps> = ({ formData }) => {
           )}
         />
         <Button disabled={isLoading} type="submit" className="cursor-pointer">
-          {formData ? "Cập nhật" : "Tạo mới"}
+          {carouselData ? "Cập nhật" : "Tạo mới"}
         </Button>
       </form>
     </Form>
