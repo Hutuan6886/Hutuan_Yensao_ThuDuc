@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/libs/db";
+import { prisma } from "@/lib/db";
 import { buildChildren } from "../route";
 
 export async function PUT(

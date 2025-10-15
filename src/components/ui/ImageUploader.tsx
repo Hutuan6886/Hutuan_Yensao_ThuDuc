@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import Image from "next/image";
-import { deleteImage, uploadImage } from "@/libs/r2-client";
+import { deleteImage, uploadImage } from "@/lib/r2-client";
 import { Input } from "@/components/ui/input";
 import { CloudUpload } from "lucide-react";
 import { useClickTrigger } from "@/hooks/useClickTrigger";

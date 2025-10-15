@@ -7,7 +7,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { cn } from "@/libs/utils";
+import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Plus, Trash } from "lucide-react";
 import { CategoryWithSub } from "@/types";

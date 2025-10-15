@@ -1,5 +1,5 @@
-import LabelAndCreateBtn from "@/components/admin/LabelOfPage/LabelAndCreateBtn";
 import React from "react";
+import LabelAndCreateBtn from "@/components/admin/LabelOfPage/LabelAndCreateBtn";
 
 const CategoriesLayout = ({
   children,
@@ -12,7 +12,6 @@ const CategoriesLayout = ({
         btnHref="/admin/categories/new"
       />
       {children}
-      {/* Table*/}
     </div>
   );
 };

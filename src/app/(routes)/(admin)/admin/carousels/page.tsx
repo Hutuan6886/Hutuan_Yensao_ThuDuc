@@ -1,5 +1,5 @@
 import React from "react";
-import { prisma } from "@/libs/db";
+import { prisma } from "@/lib/db";
 import { CarouselWithImage } from "@/types";
 import CarouselsList from "./_components/CarouselsList";
 import LabelAndCreateBtn from "@/components/admin/LabelOfPage/LabelAndCreateBtn";

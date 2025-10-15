@@ -1,4 +1,4 @@
-import { r2 } from "@/libs/r2";
+import { r2 } from "@/lib/r2";
 import { DeleteObjectCommand, PutObjectCommand } from "@aws-sdk/client-s3";
 import { NextRequest, NextResponse } from "next/server";
 

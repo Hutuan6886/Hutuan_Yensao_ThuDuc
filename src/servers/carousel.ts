@@ -1,5 +1,5 @@
 "use server";
-import { prisma } from "@/libs/db";
+import { prisma } from "@/lib/db";
 import { CarouselWithImage } from "@/types";
 
 export async function getCarousels(): Promise<CarouselWithImage[]> {

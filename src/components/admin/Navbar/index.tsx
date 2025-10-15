@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import { usePathname } from "next/navigation";
-import { cn } from "@/libs/utils";
+import { cn } from "@/lib/utils";
 import LogoNav from "./LogoNav";
 import MainNav from "./MainNav";
 

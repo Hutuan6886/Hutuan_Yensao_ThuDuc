@@ -1,6 +1,28 @@
 "use server";
-import { prisma } from "@/libs/db";
+import { prisma } from "@/lib/db";
 import { CategoryWithSub } from "@/types";
+
+export async function getCategories(): Promise<CategoryWithSub[]> {
+  return prisma.category.findMany({
+    where: {
+      parentId: null,
+    },
+    include: {
+      parent: true,
+      children: {
+        include: {
+          parent: true,
+          children: {
+            include: {
+              parent: true,
+              children: true,
+            },
+          },
+        },
+      },
+    },
+  });
+}
 
 export async function getCategoryById(
   id: string

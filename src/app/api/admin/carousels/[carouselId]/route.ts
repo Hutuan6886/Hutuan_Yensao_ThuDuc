@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/libs/db";
-import { deleteImage } from "@/libs/r2-client";
+import { prisma } from "@/lib/db";
+import { deleteImage } from "@/lib/r2-client";
 
 export async function PUT(
   req: NextRequest,
