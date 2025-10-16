@@ -26,10 +26,10 @@ model Category {
     updatedAt DateTime @updatedAt
 
     name String
-    normalizedName String @unique
+    normalizedName String
 
     parentId String?    // nếu null => là category cha
-    parent Category?  @relation("CategoryHierarchy", fields: [parentId], references: [id])
+    parent Category?  @relation("CategoryHierarchy", fields: [parentId], references: [id], onDelete: Cascade)
     children Category[] @relation("CategoryHierarchy")
 
     product Product[]

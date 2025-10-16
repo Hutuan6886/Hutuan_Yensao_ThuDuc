@@ -29,23 +29,12 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ categoryData }) => {
         },
   });
   const onSubmit = async (data: NestedCategorySchema) => {
-    console.log("category form", data);
     if (!categoryData)
-      await createCategory(data).then(() => {
-        router.refresh();
-        categoryForm.reset({
-          name: "",
-          children: [],
-        });
-      });
+      await createCategory(data).then(() => router.push("/admin/categories"));
     else
-      await updateCategory(categoryData.id, data).then(() => {
-        router.refresh();
-        categoryForm.reset({
-          name: "",
-          children: [],
-        });
-      });
+      await updateCategory(categoryData.id, data).then(() =>
+        router.push("/admin/categories")
+      );
   };
   const { isLoading, run } = useLoading(onSubmit);
   return (

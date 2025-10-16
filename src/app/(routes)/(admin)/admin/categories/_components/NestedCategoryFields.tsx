@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import { useFieldArray } from "react-hook-form";
 import {
@@ -20,6 +21,7 @@ interface NestedCategoryFieldsProps {
   categoryData: CategoryWithSub | null;
 }
 
+const MAX_DEPTH: number = 2;
 const NestedCategoryFields: React.FC<NestedCategoryFieldsProps> = ({
   form,
   name,
@@ -60,9 +62,13 @@ const NestedCategoryFields: React.FC<NestedCategoryFieldsProps> = ({
                 name === "root" ? "children" : `${name}.children`
               }[${index}]`}
               fieldName={
-                categoryData
-                  ? `Danh mục con thứ ${index + 1} của ${categoryData.name}`
-                  : `Danh mục con thứ ${index + 1}`
+                depth === 0
+                  ? categoryData
+                    ? `Danh mục con thứ ${index + 1} của ${categoryData.name}`
+                    : `Danh mục con thứ ${index + 1}`
+                  : categoryData
+                    ? `Danh mục cháu thứ ${index + 1} của ${categoryData.name}`
+                    : `Danh mục cháu thứ ${index + 1}`
               }
               depth={depth + 1}
               categoryData={categoryData}
@@ -78,15 +84,17 @@ const NestedCategoryFields: React.FC<NestedCategoryFieldsProps> = ({
           </div>
         ))}
         {/* Add Subcategory */}
-        <Button
-          type="button"
-          size="sm"
-          variant="secondary"
-          className="cursor-pointer"
-          onClick={() => append({ name: "", children: [] })}
-        >
-          <Plus className="w-4 h-4 mr-1" /> Thêm danh mục con
-        </Button>
+        {depth < MAX_DEPTH && (
+          <Button
+            type="button"
+            size="sm"
+            variant="secondary"
+            className="cursor-pointer"
+            onClick={() => append({ name: "", children: [] })}
+          >
+            <Plus className="w-4 h-4 mr-1" /> Thêm danh mục con
+          </Button>
+        )}
       </div>
     </div>
   );

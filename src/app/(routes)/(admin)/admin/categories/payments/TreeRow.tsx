@@ -2,7 +2,6 @@
 import { TableCell, TableRow } from "@/components/ui/table";
 import { ColumnDef, flexRender, Row } from "@tanstack/react-table";
 import { ChevronRight } from "lucide-react";
-import { AnimatePresence, motion } from "motion/react";
 import React from "react";
 
 const TreeRow = <TData extends { children?: TData[] }>({

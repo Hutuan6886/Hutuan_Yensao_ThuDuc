@@ -12,12 +12,7 @@ export async function getCategories(): Promise<CategoryWithSub[]> {
       children: {
         include: {
           parent: true,
-          children: {
-            include: {
-              parent: true,
-              children: true,
-            },
-          },
+          children: true,
         },
       },
     },
@@ -37,12 +32,7 @@ export async function getCategoryById(
       children: {
         include: {
           parent: true,
-          children: {
-            include: {
-              parent: true,
-              children: true,
-            },
-          },
+          children: true,
         },
       },
     },

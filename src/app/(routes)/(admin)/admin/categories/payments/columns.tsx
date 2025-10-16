@@ -3,7 +3,13 @@ import { CategoryWithSub } from "@/types";
 import { ColumnDef } from "@tanstack/react-table";
 import { format } from "date-fns";
 
-export const columns: ColumnDef<CategoryWithSub>[] = [
+export const columns = ({
+  onEdit,
+  onDelete,
+}: {
+  onEdit: (id: string) => void;
+  onDelete: (id: string) => void;
+}): ColumnDef<CategoryWithSub>[] => [
   {
     accessorKey: "name",
     header: "Tên danh mục",
@@ -43,12 +49,23 @@ export const columns: ColumnDef<CategoryWithSub>[] = [
     header: "",
     cell: ({ row }) => {
       const level: number = row.depth;
+      const category = row.original;
       /* Chỉ hiện button action ở parent row*/
       if (level !== 0) return null;
       return (
         <div className="flex gap-4">
-          <button className="text-blue-500 hover:underline transition cursor-pointer">Chỉnh sửa</button>
-          <button className="text-red-500 hover:underline transition cursor-pointer">Xóa</button>
+          <button
+            className="text-blue-500 hover:underline transition cursor-pointer"
+            onClick={() => onEdit(category.id)}
+          >
+            Chỉnh sửa
+          </button>
+          <button
+            className="text-red-500 hover:underline transition cursor-pointer"
+            onClick={() => onDelete(category.id)}
+          >
+            Xóa
+          </button>
         </div>
       );
     },

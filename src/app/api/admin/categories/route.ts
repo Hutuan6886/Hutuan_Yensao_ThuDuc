@@ -1,5 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
+import {
+  buildChildrenCategoryPost,
+  normalize,
+} from "./_utils/category.service";
 
 export async function POST(req: NextRequest) {
   try {
@@ -10,12 +14,24 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       );
     }
+    const duplicate = await prisma.category.findFirst({
+      where: {
+        normalizedName: normalize(name),
+      },
+    });
+    if (duplicate) {
+      return NextResponse.json(
+        { error: "Category name already exists" },
+        { status: 404 }
+      );
+    }
+    console.log({ name, children });
     const newCategory = await prisma.category.create({
       data: {
         name,
-        normalizedName: name.trim().toLowerCase(),
+        normalizedName: normalize(name),
         ...(children && children.length > 0
-          ? { children: { create: buildChildren(children) } }
+          ? { children: { create: buildChildrenCategoryPost(children) } }
           : {}),
       },
       include: {
@@ -35,19 +51,4 @@ export async function POST(req: NextRequest) {
       { status: 500 }
     );
   }
-}
-
-export function buildChildren(
-  children?: { name: string; children?: any[] }[]
-): any {
-  // Recursive
-  // Check cấp con ở children để đảm bảo children là 1 [], không null hay undefine
-  if (!children || children.length === 0) return []; // trả về array rỗng nếu null
-  return children.map((child) => ({
-    name: child.name,
-    normalizedName: child.name.trim().toLowerCase(),
-    ...(child.children && child.children.length > 0
-      ? { children: { create: buildChildren(child.children) } }
-      : {}),
-  }));
 }
