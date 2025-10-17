@@ -1,5 +1,5 @@
 "use client";
-import React, { useRef, useState } from "react";
+import React, { useRef } from "react";
 import { useRouter } from "next/navigation";
 import { CategoryWithSub } from "@/types";
 import { columns } from "./columns";

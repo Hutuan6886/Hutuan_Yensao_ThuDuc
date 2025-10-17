@@ -1,10 +1,10 @@
 import z from "zod";
-import { categoryFormSchema } from "@/app/(routes)/(admin)/admin/categories/_form_schema";
+import { massFormSchema } from "@/app/(routes)/(admin)/admin/masses/_form_schema";
 import toast from "react-hot-toast";
 
-export async function createCategory(data: z.infer<typeof categoryFormSchema>) {
+export const createMass = async (data: z.infer<typeof massFormSchema>) => {
   try {
-    const res = await fetch(`/api/admin/categories`, {
+    const res = await fetch(`/api/admin/masses`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -12,16 +12,16 @@ export async function createCategory(data: z.infer<typeof categoryFormSchema>) {
       body: JSON.stringify(data),
     });
     if (!res.ok) {
-      toast.error("Thêm mới danh mục thất bại", {
+      toast.error("Thêm mới khối lượng thất bại", {
         style: {
           border: "1px solid #713200",
           padding: "16px",
           color: "#713200",
         },
       });
-      throw new Error("Failed to create carousel");
+      throw new Error("Failed to create masss");
     }
-    toast.success("Thêm mới danh mục thành công", {
+    toast.success("Thêm mới khối lượng thành công", {
       style: {
         border: "1px solid #713200",
         padding: "16px",
@@ -29,17 +29,17 @@ export async function createCategory(data: z.infer<typeof categoryFormSchema>) {
       },
     });
     return res.json();
-  } catch (error) {
+  } catch (error: any) {
     throw error;
   }
-}
+};
 
-export async function updateCategory(
+export async function updateMass(
   id: string,
-  data: z.infer<typeof categoryFormSchema>
+  data: z.infer<typeof massFormSchema>
 ): Promise<JSON> {
   try {
-    const res = await fetch(`/api/admin/categories/${id}`, {
+    const res = await fetch(`/api/admin/masses/${id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -47,36 +47,36 @@ export async function updateCategory(
       body: JSON.stringify(data),
     });
     if (!res.ok) {
-      toast.error("Cập nhật danh mục thất bại", {
+      toast.error("Cập nhật khối lượng thất bại", {
         style: {
           border: "1px solid #713200",
           padding: "16px",
           color: "#713200",
         },
       });
-      throw new Error("Failed to update carousel");
+      throw new Error("Failed to update mass");
     }
-    toast.success("Cập nhật danh mục thành công", {
+    toast.success("Cập nhật khối lượng thành công", {
       style: {
         border: "1px solid #713200",
         padding: "16px",
         color: "#713200",
       },
     });
-    const categoryUpdated = await res.json();
-    return categoryUpdated;
+    const massUpdated = await res.json();
+    return massUpdated;
   } catch (error) {
     throw error;
   }
 }
 
-export async function deleteCategory(
+export async function deleteMass(
   id: string,
   signal?: AbortSignal
 ): Promise<boolean> {
   try {
     if (signal?.aborted) return false;
-    const res = await fetch(`/api/admin/categories/${id}`, {
+    const res = await fetch(`/api/admin/masses/${id}`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
@@ -84,16 +84,16 @@ export async function deleteCategory(
       signal,
     });
     if (!res.ok) {
-      toast.error("Xóa danh mục thất bại", {
+      toast.error("Xóa khối lượng thất bại", {
         style: {
           border: "1px solid #713200",
           padding: "16px",
           color: "#713200",
         },
       });
-      throw new Error("Failed to delete carousel");
+      throw new Error("Failed to delete mass");
     }
-    toast.success("Xóa danh mục thành công", {
+    toast.success("Xóa khối lượng thành công", {
       style: {
         border: "1px solid #713200",
         padding: "16px",

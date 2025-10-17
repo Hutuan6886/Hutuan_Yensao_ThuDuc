@@ -218,7 +218,7 @@ export function DataTable<TData extends { children?: TData[] }, TValue>({
   columns,
   data,
 }: DataTableProps<TData, TValue>) {
-  const table = useReactTable({
+  const categoryTable = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
@@ -229,7 +229,7 @@ export function DataTable<TData extends { children?: TData[] }, TValue>({
     <div className="overflow-hidden rounded-md border">
       <Table>
         <TableHeader>
-          {table.getHeaderGroups().map((headerGroup) => (
+          {categoryTable.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
                 <TableHead key={header.id}>
@@ -245,8 +245,8 @@ export function DataTable<TData extends { children?: TData[] }, TValue>({
           ))}
         </TableHeader>
         <TableBody>
-          {table.getRowModel().rows?.length ? (
-            table
+          {categoryTable.getRowModel().rows?.length ? (
+            categoryTable
               .getRowModel()
               .rows.map((row) => (
                 <TreeRow<TData> key={row.id} row={row} columns={columns} />

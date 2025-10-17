@@ -1,6 +1,6 @@
 import React from "react";
 import { getCategories } from "@/servers/category";
-import DataTableWrapper from "./payments/DataTableWrapper";
+import DataTableWrapper from "./_table/DataTableWrapper";
 const CategoriesPage = async () => {
   const categories = await getCategories();
   return <DataTableWrapper categoriesData={categories} />;

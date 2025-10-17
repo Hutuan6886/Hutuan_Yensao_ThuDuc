@@ -43,8 +43,8 @@ const DasboardNavbar: React.FC<DasboardNavbarProps> = ({ className }) => {
     },
     {
       label: "Mass",
-      href: "/admin/mass",
-      action: pathname.includes("/admin/mass"),
+      href: "/admin/masses/new",
+      action: pathname.includes("/admin/masses"),
     },
     { label: "Products", href: "/admin/products", action: false },
     { label: "Orders", href: "/admin/orders", action: false },

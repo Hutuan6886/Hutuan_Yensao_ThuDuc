@@ -59,7 +59,6 @@ model ProductMass {
     mass Mass @relation(fields: [massId], references: [id],onDelete: Cascade)
 
     orderItems OrderItem[]
-    
 }
 
 model Product {
