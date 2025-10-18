@@ -1,6 +1,6 @@
 import React from "react";
 import { getCarouselById } from "@/servers/carousel";
-import { CarouselWithImage } from "@/types";
+import { CarouselType } from "@/types";
 import CarouselForm from "../_components/CarouselForm";
 
 const CarouselPage = async ({
@@ -9,7 +9,7 @@ const CarouselPage = async ({
   params: Promise<{ carouselId: string }>;
 }) => {
   const { carouselId } = await params;
-  const data: CarouselWithImage | null = await getCarouselById(carouselId);
+  const data: CarouselType | null = await getCarouselById(carouselId);
   return (
     <div className="flex flex-col gap-16">
       <h1 className="text-3xl font-semibold">Chỉnh sửa ảnh bìa</h1>

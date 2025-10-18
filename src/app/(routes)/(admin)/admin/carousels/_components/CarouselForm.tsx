@@ -3,9 +3,12 @@ import React from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { useRouter } from "next/navigation";
 
-import { CarouselFormSchema } from "../_form_schema";
+import { CarouselType } from "@/types";
 import { createCarousel, updateCarousel } from "@/services/carousel";
+import { CarouselFormSchema } from "../_form_schema";
+import useLoading from "@/hooks/useLoading";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -19,12 +22,9 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { ImageUploader } from "@/components/ui/ImageUploader";
-import { useRouter } from "next/navigation";
-import { CarouselWithImage } from "@/types";
-import useLoading from "@/hooks/useLoading";
 
 interface CarouselFormProps {
-  carouselData: CarouselWithImage | null;
+  carouselData: CarouselType | null;
 }
 
 const CarouselForm: React.FC<CarouselFormProps> = ({ carouselData }) => {

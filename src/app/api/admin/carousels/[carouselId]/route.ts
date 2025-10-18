@@ -68,7 +68,7 @@ export async function PUT(
         include: { image: true },
       });
     });
-    
+
     return NextResponse.json(updatedCarousel, { status: 200 });
   } catch (error) {
     return NextResponse.json(
@@ -99,9 +99,6 @@ export async function DELETE(
         { error: "Carousel not found" },
         { status: 404 }
       );
-    }
-    if (!existing.image.href || !existing.imageId) {
-      return NextResponse.json({ error: "Image not found" }, { status: 404 });
     }
     // Delete Image Cloudflare
     await deleteImage(existing.image.href);

@@ -1,18 +1,18 @@
 "use client";
 import React from "react";
-import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
+import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createCategory, updateCategory } from "@/services/category";
 import useLoading from "@/hooks/useLoading";
-import { CategoryWithSub } from "@/types";
+import { CategoryType } from "@/types";
 import { categoryFormSchema, NestedCategorySchema } from "../_form_schema";
 import NestedCategoryFields from "./NestedCategoryFields";
 import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 
 interface CategoryFormProps {
-  categoryData: CategoryWithSub | null;
+  categoryData: CategoryType | null;
 }
 const CategoryForm: React.FC<CategoryFormProps> = ({ categoryData }) => {
   const router = useRouter();

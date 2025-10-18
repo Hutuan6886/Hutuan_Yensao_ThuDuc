@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { Category } from "@prisma/client";
-import { CategoryWithSub } from "@/types";
+import { CategoryType } from "@/types";
 import {
   buildChildrenCategoryPut,
   normalize,
@@ -62,16 +62,16 @@ export async function PUT(
     */
     //* Tạo mới các phần tử children có id không trùng với các id hoặc (normalizedName) của các phần tử trong DB
     const toCreate = children.filter(
-      (ic: CategoryWithSub) =>
+      (ic: CategoryType) =>
         !existing.children.some((ec) => ec.normalizedName === ic.normalizedName)
     );
     //* Cập nhật các phần tử gửi lên khi có id trùng với các phần tử  id của children trong DB
-    const toUpdate = children.filter((ic: CategoryWithSub) =>
+    const toUpdate = children.filter((ic: CategoryType) =>
       existing.children.some((ec) => ec.id === ic.id)
     );
     //* Xóa đi các phần tử trong DB có id không trùng với các id của children từ client gửi lên (vì nếu trong DB còn tồn tại phần tử có id không khớp với client, thì phần tử trong DB đó là rác)
     const toDelete = existing.children.filter(
-      (ec) => !children.some((ic: CategoryWithSub) => ic.id === ec.id)
+      (ec) => !children.some((ic: CategoryType) => ic.id === ec.id)
     );
 
     const updated = await prisma.category.update({
@@ -82,10 +82,10 @@ export async function PUT(
         name,
         normalizedName: normalize(name),
         children: {
-          create: toCreate.map((c: CategoryWithSub) =>
+          create: toCreate.map((c: CategoryType) =>
             buildChildrenCategoryPut(c)
           ),
-          update: toUpdate.map((c: CategoryWithSub) => ({
+          update: toUpdate.map((c: CategoryType) => ({
             where: {
               id: c.id,
             },

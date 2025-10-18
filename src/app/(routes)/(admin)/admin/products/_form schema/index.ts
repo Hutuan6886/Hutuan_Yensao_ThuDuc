@@ -1,0 +1,37 @@
+import z from "zod";
+import { categoryFormSchema } from "../../categories/_form_schema";
+
+export const productFormSchema = z.object({
+  label: z.string().nonempty("Vùi lòng điền tên sản phẩm"),
+  images: z
+    .array(z.object({ href: z.string(), alt: z.string() }))
+    .min(1, "Vùi lòng thêm hình ảnh sản phẩm"),
+  productMass: z.array(
+    z.object({
+      price: z.number(),
+      discount: z.number(),
+      mass: z.object({
+        value: z.number(),
+      }),
+    })
+  ),
+  category: categoryFormSchema,
+  notion: z.array(
+    z.object({
+      title: z.string(),
+      content: z.string(),
+    })
+  ),
+  description: z.array(
+    z.object({
+      title: z.string(),
+      image: z
+        .object({
+          href: z.string(),
+          alt: z.string(),
+        })
+        .nullable(),
+      content: z.string(),
+    })
+  ),
+});

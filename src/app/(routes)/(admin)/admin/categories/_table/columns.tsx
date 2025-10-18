@@ -1,5 +1,5 @@
 "use client";
-import { CategoryWithSub } from "@/types";
+import { CategoryType } from "@/types";
 import { ColumnDef } from "@tanstack/react-table";
 import { format } from "date-fns";
 
@@ -9,7 +9,7 @@ export const columns = ({
 }: {
   onEdit: (id: string) => void;
   onDelete: (id: string) => void;
-}): ColumnDef<CategoryWithSub>[] => [
+}): ColumnDef<CategoryType>[] => [
   {
     accessorKey: "name",
     header: "Tên danh mục",

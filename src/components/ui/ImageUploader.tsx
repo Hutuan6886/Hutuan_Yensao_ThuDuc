@@ -9,6 +9,7 @@ import CloseButton from "./CloseButton";
 import { usePopup } from "@/stores/pop-up/usePopup";
 import Popup from "./Popup";
 import useLoading from "@/hooks/useLoading";
+import toast from "react-hot-toast";
 
 export function ImageUploader({
   value,
@@ -17,8 +18,6 @@ export function ImageUploader({
   value?: { href?: string; alt?: string };
   onUploaded: (url: string, alt: string) => void;
 }) {
-  const [preview, setPreview] = useState(value?.href || "");
-  const [uploading, setUploading] = useState(false);
   const { ref: uploadRef, trigger: openUpload } =
     useClickTrigger<HTMLInputElement>();
   const {
@@ -32,37 +31,68 @@ export function ImageUploader({
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Hiển thị preview local
-    setPreview(URL.createObjectURL(file));
-    setUploading(true);
-
     // Gửi file đến API upload (đến Cloudflare hoặc Cloudinary)
-    const url: string = await uploadImage("carousels", file);
-
-    if (url) {
-      // Gửi kết quả ra ngoài cho form
-      onUploaded(url, `Đây là ảnh bìa ${file.name} cửa hàng Yến Sào Thủ Đức`);
-      setUploading(false);
-    } else {
-      console.error("Upload image failed", url);
-    }
+    await uploadImage("carousels", file)
+      .then((url) => {
+        // Gửi kết quả ra ngoài cho form
+        onUploaded(url, `Đây là ảnh bìa ${file.name} cửa hàng Yến Sào Thủ Đức`);
+        toast.success("Upload ảnh thành công", {
+          style: {
+            border: "1px solid #713200",
+            padding: "16px",
+            color: "#713200",
+          },
+        });
+      })
+      .catch(() => {
+        toast.error("Upload ảnh thất bại", {
+          style: {
+            border: "1px solid #713200",
+            padding: "16px",
+            color: "#713200",
+          },
+        });
+      });
   };
+  const { isLoading: uploading, run: uploadFile } =
+    useLoading(handleFileChange);
 
   const handleFileDelete = async (url: string, signal?: AbortSignal) => {
     // Delete in Cloudflare
-    const res = await deleteImage(url, signal);
-    if (res.valueOf()) {
-      // Delete image field
-      onUploaded("", "");
-      setPreview("");
-    }
+    await deleteImage(url, signal)
+      .then((res) => {
+        if (res.valueOf()) {
+          // Delete image field
+          onUploaded("", "");
+          toast.success("Xóa ảnh thành công", {
+            style: {
+              border: "1px solid #713200",
+              padding: "16px",
+              color: "#713200",
+            },
+          });
+        }
+      })
+      .catch(() => {
+        toast.error("Xóa ảnh thất bại", {
+          style: {
+            border: "1px solid #713200",
+            padding: "16px",
+            color: "#713200",
+          },
+        });
+      });
   };
-  const { isLoading, run, cancelRequest } = useLoading(handleFileDelete);
+  const {
+    isLoading: deleting,
+    run: deleteFile,
+    cancelRequest,
+  } = useLoading(handleFileDelete);
 
   return (
     <>
       <Popup
-        isLoading={isLoading}
+        isLoading={deleting}
         title={title}
         message={message}
         isOpen={isPopupOpen}
@@ -74,10 +104,10 @@ export function ImageUploader({
       />
       <div className="space-y-2">
         {uploading && <p className="text-sm text-gray-500">Đang upload...</p>}
-        {preview || value?.href ? (
+        {value?.href ? (
           <div className="relative">
             <Image
-              src={preview || (value?.href as string)}
+              src={value?.href as string}
               alt={value?.alt || "Preview"}
               width={1200}
               height={900}
@@ -89,7 +119,7 @@ export function ImageUploader({
                 setPopupOpen({
                   title: "Bạn muốn xóa ảnh này?",
                   message: "Ảnh này sẽ bị xóa vĩnh viễn",
-                  submitPopup: async () => run(value?.href as string),
+                  submitPopup: async () => deleteFile(value?.href as string),
                 })
               }
             />
@@ -103,7 +133,7 @@ export function ImageUploader({
               ref={uploadRef}
               type="file"
               accept="image/*"
-              onChange={handleFileChange}
+              onChange={uploadFile}
               className="absolute top-0 left-0 invisible"
             />
             <div className="flex flex-col items-center justify-center gap-2 p-2">

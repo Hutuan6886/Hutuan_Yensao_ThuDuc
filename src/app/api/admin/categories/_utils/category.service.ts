@@ -1,4 +1,4 @@
-import { CategoryWithSub } from "@/types";
+import { CategoryType } from "@/types";
 
 export function buildChildrenCategoryPost(
   children?: { name: string; children?: any[] }[]
@@ -15,7 +15,7 @@ export function buildChildrenCategoryPost(
   }));
 }
 
-export const buildChildrenCategoryPut = (child: CategoryWithSub, level = 1) => {
+export const buildChildrenCategoryPut = (child: CategoryType, level = 1) => {
   const obj: any = {
     name: child.name,
     normalizedName: normalize(child.name),
@@ -35,8 +35,8 @@ export const buildChildrenCategoryPut = (child: CategoryWithSub, level = 1) => {
 export const normalize = (s: string): string => {
   return s.trim().toLowerCase();
 };
-export const inputChildren = (children: CategoryWithSub[]) => {
-  return children.map((c: CategoryWithSub) => ({
+export const inputChildren = (children: CategoryType[]) => {
+  return children.map((c: CategoryType) => ({
     ...c,
     normalizedName: normalize(c.name),
   }));

@@ -3,19 +3,19 @@ import React from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 
-import { CarouselWithImage } from "@/types";
+import { CarouselType } from "@/types";
 import { deleteCarousel } from "@/services/carousel";
 import { useCopyClipboard } from "@/hooks/useCopyClipboard";
 import useLoading from "@/hooks/useLoading";
 import { usePopup } from "@/stores/pop-up/usePopup";
 
 import CloseButton from "@/components/ui/CloseButton";
-import { Copy } from "lucide-react";
 import Popup from "@/components/ui/Popup";
+import { Copy } from "lucide-react";
 
 interface CarouselItemProps {
   index: number;
-  data: CarouselWithImage;
+  data: CarouselType;
 }
 const CarouselItem: React.FC<CarouselItemProps> = ({ index, data }) => {
   const router = useRouter();

@@ -11,14 +11,14 @@ import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Plus, Trash } from "lucide-react";
-import { CategoryWithSub } from "@/types";
+import { CategoryType } from "@/types";
 
 interface NestedCategoryFieldsProps {
   form: any;
   name: string;
   fieldName: string;
   depth?: number;
-  categoryData: CategoryWithSub | null;
+  categoryData: CategoryType | null;
 }
 
 const MAX_DEPTH: number = 2;

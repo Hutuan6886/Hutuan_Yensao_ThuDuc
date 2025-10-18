@@ -67,14 +67,12 @@ model Product {
     updatedAt DateTime @updatedAt
 
     label String
-
-    images Image[] @relation("ProductImages")
-
     categoryId String
     category Category @relation(fields: [categoryId], references: [id],onDelete: Cascade)
 
-    productMass ProductMass[]
+    images Image[] @relation("ProductImages")
 
+    productMass ProductMass[]
     notion Notion[]
     description Description[]
 }

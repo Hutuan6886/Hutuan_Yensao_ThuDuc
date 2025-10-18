@@ -1,7 +1,7 @@
 "use client";
 import React, { useRef } from "react";
 import { useRouter } from "next/navigation";
-import { CategoryWithSub } from "@/types";
+import { CategoryType } from "@/types";
 import { columns } from "./columns";
 import { DataTable } from "./data-table";
 import Popup from "@/components/ui/Popup";
@@ -10,7 +10,7 @@ import { deleteCategory } from "@/services/category";
 import { usePopup } from "@/stores/pop-up/usePopup";
 
 interface DataTableWrapperProps {
-  categoriesData: CategoryWithSub[];
+  categoriesData: CategoryType[];
 }
 const DataTableWrapper: React.FC<DataTableWrapperProps> = ({
   categoriesData,

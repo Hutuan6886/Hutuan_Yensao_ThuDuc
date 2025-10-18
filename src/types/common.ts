@@ -1,10 +1,64 @@
-import { Carousel, Category, Image } from "@prisma/client";
+import {
+  Carousel,
+  Category,
+  Description,
+  Image,
+  Notion,
+  Product,
+  ProductMass,
+} from "@prisma/client";
 
-export type CarouselWithImage = Carousel & {
+export type CarouselType = Carousel & {
   image: Image;
 };
 
-export type CategoryWithSub = Category & {
-  parent: Category | null;
-  children: CategoryWithSub[];
+export type CategoryType = Category & {
+  children: CategoryType[];
+};
+
+export type ProductType = {
+  id: string;
+  label: string;
+  createdAt: Date;
+  updatedAt: Date;
+
+  // Category
+  category: CategoryType;
+
+  // Images
+  images: {
+    id: string;
+    href: string;
+    alt: string;
+  }[];
+
+  // ProductMass
+  productMass: {
+    id: string;
+    price: number;
+    discount: number;
+    mass: {
+      id: string;
+      value: number;
+    };
+  }[];
+
+  // Notion
+  notion: {
+    id: string;
+    title: string;
+    content: string;
+  }[];
+
+  // Description
+  description: {
+    id: string;
+    title: string;
+    content: string;
+    image?: {
+      id: string;
+      href: string;
+      alt: string;
+    } | null;
+  }[];
 };
