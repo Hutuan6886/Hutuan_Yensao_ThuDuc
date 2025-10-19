@@ -92,6 +92,7 @@ const CarouselForm: React.FC<CarouselFormProps> = ({ carouselData }) => {
               <FormControl>
                 <ImageUploader
                   value={field.value} // chứa {href, alt}, có thể dùng để hiển thị preview
+                  uploadToFolderName="carousels"
                   onUploaded={(url, alt) => {
                     // ✅ Khi upload xong, cập nhật form
                     field.onChange({ href: url, alt });

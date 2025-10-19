@@ -6,6 +6,7 @@ export const productFormSchema = z.object({
   images: z
     .array(z.object({ href: z.string(), alt: z.string() }))
     .min(1, "Vùi lòng thêm hình ảnh sản phẩm"),
+  category: categoryFormSchema,
   productMass: z.array(
     z.object({
       price: z.number(),
@@ -15,7 +16,6 @@ export const productFormSchema = z.object({
       }),
     })
   ),
-  category: categoryFormSchema,
   notion: z.array(
     z.object({
       title: z.string(),

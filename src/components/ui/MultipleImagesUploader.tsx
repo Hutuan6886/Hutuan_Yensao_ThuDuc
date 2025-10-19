@@ -14,12 +14,14 @@ import toast from "react-hot-toast";
 
 interface MultipleImagesUploader {
   value: { href: string; alt: string }[] | [];
+  uploadToFolderName: string;
   onUploaded: (images: { href: string; alt: string }[]) => void;
   onDeleted: (href: string) => void;
 }
 
 const MultipleImagesUploader: React.FC<MultipleImagesUploader> = ({
   value,
+  uploadToFolderName,
   onUploaded,
   onDeleted,
 }) => {
@@ -36,7 +38,7 @@ const MultipleImagesUploader: React.FC<MultipleImagesUploader> = ({
     const fileList = e.target.files as FileList;
     const image = Array.from(fileList).map(async (file) => {
       // Gửi lên API
-      const imageUploaded = await uploadImage("products/product", file);
+      const imageUploaded = await uploadImage(`${uploadToFolderName}`, file);
       return {
         href: imageUploaded,
         alt: `Đây là hình ảnh sản phẩm ${file.name} Yến Sào Thủ Đức`,

@@ -15,26 +15,39 @@ import {
 import { Input } from "@/components/ui/input";
 import MultipleImagesUploader from "@/components/ui/MultipleImagesUploader";
 import { Button } from "@/components/ui/button";
-import { ProductType } from "@/types";
+import { CategoryType, ProductType } from "@/types";
+import SelectCategory from "./SelectCategory";
 
 interface ProductFormProps {
-  productData: ProductType | null;
+  categories: CategoryType[];
+  product: ProductType | null;
 }
-const ProductForm: React.FC<ProductFormProps> = ({ productData }) => {
+const ProductForm: React.FC<ProductFormProps> = ({ categories, product }) => {
   const productForm = useForm<z.infer<typeof productFormSchema>>({
     resolver: zodResolver(productFormSchema),
-    defaultValues: productData
+    defaultValues: product
       ? {
-          label: productData.label,
-          images: productData.images,
-          category: productData.category,
-          productMass: productData.productMass,
-          notion: productData.notion,
-          description: productData.description,
+          label: product.label,
+          images: product.images,
+          category: product.category,
+          productMass: product.productMass,
+          notion: product.notion,
+          description: product.description,
         }
       : {
           label: "",
-          category: "",
+          category: {
+            createdAt: new Date(
+              "Wed Oct 15 2025 00:03:42 GMT+0700 (Indochina Time)"
+            ),
+            updatedAt: new Date(
+              "Wed Oct 15 2025 00:03:42 GMT+0700 (Indochina Time)"
+            ),
+            id: "c760baed-cc3b-4cef-91fa-2b5c019105c2",
+            name: "Yến vụn đắp tổ",
+            normalizedName: "yến vụn đắp tổ",
+            parentId: "9a45b1d7-aef8-4f1d-85f9-8afb25ecdac2",
+          },
           images: [],
           productMass: [],
           notion: [],
@@ -45,7 +58,7 @@ const ProductForm: React.FC<ProductFormProps> = ({ productData }) => {
   const onSubmit = (data: z.infer<typeof productFormSchema>) => {
     console.log("data", data);
   };
-  console.log("product data", productData);
+  console.log("product data", product);
   console.log("product form", productForm.watch());
   return (
     <Form {...productForm}>
@@ -74,6 +87,7 @@ const ProductForm: React.FC<ProductFormProps> = ({ productData }) => {
               <FormControl>
                 <MultipleImagesUploader
                   value={field.value}
+                  uploadToFolderName="products/product"
                   onUploaded={(images: { href: string; alt: string }[]) => {
                     field.onChange(images);
                   }}
@@ -88,12 +102,29 @@ const ProductForm: React.FC<ProductFormProps> = ({ productData }) => {
             </FormItem>
           )}
         />
+        <FormField
+          control={productForm.control}
+          name="category"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Danh mục sản phẩm</FormLabel>
+              <FormControl>
+                <SelectCategory
+                  categories={categories}
+                  value={field.value}
+                  onChange={(category) => field.onChange(category)}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
         <Button
           // disabled={isLoading}
           type="submit"
           className="cursor-pointer"
         >
-          {productData ? "Cập nhật" : "Tạo mới"}
+          {product ? "Cập nhật" : "Tạo mới"}
         </Button>
       </form>
     </Form>

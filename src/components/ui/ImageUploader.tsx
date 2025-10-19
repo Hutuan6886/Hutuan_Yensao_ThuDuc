@@ -13,9 +13,11 @@ import toast from "react-hot-toast";
 
 export function ImageUploader({
   value,
+  uploadToFolderName,
   onUploaded,
 }: {
   value?: { href?: string; alt?: string };
+  uploadToFolderName: string;
   onUploaded: (url: string, alt: string) => void;
 }) {
   const { ref: uploadRef, trigger: openUpload } =
@@ -32,7 +34,7 @@ export function ImageUploader({
     if (!file) return;
 
     // Gửi file đến API upload (đến Cloudflare hoặc Cloudinary)
-    await uploadImage("carousels", file)
+    await uploadImage(`${uploadToFolderName}`, file)
       .then((url) => {
         // Gửi kết quả ra ngoài cho form
         onUploaded(url, `Đây là ảnh bìa ${file.name} cửa hàng Yến Sào Thủ Đức`);

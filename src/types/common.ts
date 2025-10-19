@@ -13,7 +13,7 @@ export type CarouselType = Carousel & {
 };
 
 export type CategoryType = Category & {
-  children: CategoryType[];
+  children?: CategoryType[];
 };
 
 export type ProductType = {
