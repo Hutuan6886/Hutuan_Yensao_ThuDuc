@@ -17,8 +17,9 @@ export const productFormSchema = z.object({
   ),
   notion: z.array(
     z.object({
-      title: z.string(),
-      content: z.string(),
+      id: z.string().nonempty(),
+      title: z.string().min(1, "Vui lòng nhập tiêu đề"),
+      content: z.string().min(1, "Vui lòng nhập chú thích"),
     })
   ),
   description: z.array(

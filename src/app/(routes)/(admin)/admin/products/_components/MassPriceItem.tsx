@@ -1,4 +1,5 @@
 "use client";
+import Checkbox from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useClickTrigger } from "@/hooks/useClickTrigger";
@@ -32,6 +33,13 @@ const MassPriceItem: React.FC<MassPriceItemProps> = ({
   return (
     <div className="flex flex-row items-center justify-start gap-8">
       <div className="flex flex-row items-center justify-start gap-6">
+        {/* <Checkbox
+          ref={ref}
+          onChange={(e: ChangeEvent<HTMLInputElement>) =>
+            onCheckboxChange(e.target.value, e.target.checked)
+          }
+          label={`${mass.value} gram`}
+        /> */}
         <Input
           ref={ref}
           type="checkbox"

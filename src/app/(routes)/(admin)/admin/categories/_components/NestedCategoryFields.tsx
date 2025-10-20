@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { useFieldArray } from "react-hook-form";
+import { useFieldArray, UseFormReturn } from "react-hook-form";
 import {
   FormControl,
   FormField,
@@ -12,9 +12,10 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Plus, Trash } from "lucide-react";
 import { CategoryType } from "@/types";
+import { NestedCategorySchema } from "../_form_schema";
 
 interface NestedCategoryFieldsProps {
-  form: any;
+  form: UseFormReturn<NestedCategorySchema>;
   name: string;
   fieldName: string;
   depth?: number;
@@ -67,8 +68,8 @@ const NestedCategoryFields: React.FC<NestedCategoryFieldsProps> = ({
                     ? `Danh mục con thứ ${index + 1} của ${categoryData.name}`
                     : `Danh mục con thứ ${index + 1}`
                   : categoryData
-                    ? `Danh mục cháu thứ ${index + 1} của ${categoryData.name}`
-                    : `Danh mục cháu thứ ${index + 1}`
+                  ? `Danh mục cháu thứ ${index + 1} của ${categoryData.name}`
+                  : `Danh mục cháu thứ ${index + 1}`
               }
               depth={depth + 1}
               categoryData={categoryData}

@@ -19,6 +19,7 @@ import { CategoryType, ProductType } from "@/types";
 import SelectCategory from "./SelectCategoryField";
 import MassPriceField from "./MassPriceField";
 import { Mass } from "@prisma/client";
+import NotionField from "./NotionField";
 
 interface ProductFormProps {
   categories: CategoryType[];
@@ -47,7 +48,6 @@ const ProductForm: React.FC<ProductFormProps> = ({
   const onSubmit = (data: z.infer<typeof productFormSchema>) => {
     console.log("data", data);
   };
-  console.log("product data", product);
   console.log("product form", productForm.watch());
   return (
     <Form {...productForm}>
@@ -120,6 +120,19 @@ const ProductForm: React.FC<ProductFormProps> = ({
                   value={field.value}
                   onChange={field.onChange}
                 />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={productForm.control}
+          name="notion"
+          render={() => (
+            <FormItem>
+              <FormLabel>Ghi chú sản phẩm</FormLabel>
+              <FormControl>
+                <NotionField form={productForm} />
               </FormControl>
               <FormMessage />
             </FormItem>
