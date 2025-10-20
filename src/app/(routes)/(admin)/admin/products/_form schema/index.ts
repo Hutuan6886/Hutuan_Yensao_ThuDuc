@@ -9,11 +9,10 @@ export const productFormSchema = z.object({
   category: categoryFormSchema,
   productMass: z.array(
     z.object({
+      id: z.string().nonempty(),
       price: z.number(),
       discount: z.number(),
-      mass: z.object({
-        value: z.number(),
-      }),
+      massId: z.string(),
     })
   ),
   notion: z.array(

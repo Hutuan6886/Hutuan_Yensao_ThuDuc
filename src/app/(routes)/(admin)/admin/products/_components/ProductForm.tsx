@@ -16,39 +16,28 @@ import { Input } from "@/components/ui/input";
 import MultipleImagesUploader from "@/components/ui/MultipleImagesUploader";
 import { Button } from "@/components/ui/button";
 import { CategoryType, ProductType } from "@/types";
-import SelectCategory from "./SelectCategory";
+import SelectCategory from "./SelectCategoryField";
+import MassPriceField from "./MassPriceField";
+import { Mass } from "@prisma/client";
 
 interface ProductFormProps {
   categories: CategoryType[];
+  masses: Mass[];
   product: ProductType | null;
 }
-const ProductForm: React.FC<ProductFormProps> = ({ categories, product }) => {
+const ProductForm: React.FC<ProductFormProps> = ({
+  categories,
+  masses,
+  product,
+}) => {
   const productForm = useForm<z.infer<typeof productFormSchema>>({
     resolver: zodResolver(productFormSchema),
     defaultValues: product
-      ? {
-          label: product.label,
-          images: product.images,
-          category: product.category,
-          productMass: product.productMass,
-          notion: product.notion,
-          description: product.description,
-        }
+      ? product
       : {
           label: "",
-          category: {
-            createdAt: new Date(
-              "Wed Oct 15 2025 00:03:42 GMT+0700 (Indochina Time)"
-            ),
-            updatedAt: new Date(
-              "Wed Oct 15 2025 00:03:42 GMT+0700 (Indochina Time)"
-            ),
-            id: "c760baed-cc3b-4cef-91fa-2b5c019105c2",
-            name: "Yến vụn đắp tổ",
-            normalizedName: "yến vụn đắp tổ",
-            parentId: "9a45b1d7-aef8-4f1d-85f9-8afb25ecdac2",
-          },
           images: [],
+          category: {},
           productMass: [],
           notion: [],
           description: [],
@@ -113,6 +102,23 @@ const ProductForm: React.FC<ProductFormProps> = ({ categories, product }) => {
                   categories={categories}
                   value={field.value}
                   onChange={(category) => field.onChange(category)}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={productForm.control}
+          name="productMass"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Giá sản phẩm</FormLabel>
+              <FormControl>
+                <MassPriceField
+                  masses={masses}
+                  value={field.value}
+                  onChange={field.onChange}
                 />
               </FormControl>
               <FormMessage />

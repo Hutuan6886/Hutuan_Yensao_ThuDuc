@@ -37,10 +37,7 @@ export type ProductType = {
     id: string;
     price: number;
     discount: number;
-    mass: {
-      id: string;
-      value: number;
-    };
+    massId: string;
   }[];
 
   // Notion
