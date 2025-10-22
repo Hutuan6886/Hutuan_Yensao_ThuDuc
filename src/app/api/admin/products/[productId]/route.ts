@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { productFormSchema } from "@/app/(routes)/(admin)/admin/products/_form schema";
 import { z } from "zod";
 import { prisma } from "@/lib/db";
-import { deleteImage, uploadImage } from "@/lib/r2-client";
+import { deleteImage, moveImage, uploadImage } from "@/lib/r2-client";
 
 /*
 - Ưu điểm:
@@ -19,74 +19,53 @@ export async function PUT(
   req: NextRequest,
   { params }: { params: Promise<{ productId: string }> }
 ) {
+  const { productId } = await params;
+  if (!productId)
+    return NextResponse.json({ error: "Missing productId" }, { status: 400 });
+
+  const existing = await prisma.product.findFirst({
+    where: { id: productId },
+    include: {
+      category: true,
+      images: true,
+      productMass: true,
+      notion: true,
+      description: { include: { image: true } },
+    },
+  });
+  if (!existing)
+    return NextResponse.json({ error: "Product not found" }, { status: 404 });
+
+  const body = await req.json();
+  const parsed = productFormSchema.safeParse(body);
+  if (!parsed.success) {
+    const tree = z.treeifyError(parsed.error);
+    return NextResponse.json(
+      { error: tree, message: "Invalid input" },
+      { status: 400 }
+    );
+  }
+
+  const { label, images, category, productMass, notion, description } =
+    parsed.data;
+
+  // Lưu tất cả href cũ để xóa sau khi update DB thành công
+  const oldProductImages = existing.images.map((img) => img.href);
+  const oldDescImages = existing.description
+    .map((d) => d.image?.href)
+    .filter(Boolean) as string[];
+
   try {
-    const { productId } = await params;
-    if (!productId) {
-      return NextResponse.json({ error: "Missing productId" }, { status: 400 });
-    }
-    const existing = await prisma.product.findFirst({
-      where: {
-        id: productId,
-      },
-      include: {
-        category: true,
-        images: true,
-        productMass: true,
-        notion: true,
-        description: {
-          include: { image: true },
-        },
-      },
-    });
-    if (!existing) {
-      return NextResponse.json({ error: "Product not found" }, { status: 404 });
-    }
-    const body = await req.json();
-    const parsed = productFormSchema.safeParse(body);
-
-    if (!parsed.success) {
-      const tree = z.treeifyError(parsed.error);
-      return NextResponse.json(
-        { error: tree, message: "Invalid input" },
-        { status: 400 }
-      );
-    }
-    const { label, images, category, productMass, notion, description } =
-      parsed.data;
-
-    // Lưu ảnh cũ để sau cùng xóa trên Cloudflare
-    const oldProductImages = existing.images.map((img) => img.href);
-    const oldDescImages = existing.description
-      .map((d) => d.image?.href)
-      .filter(Boolean) as string[];
-
+    // 1. Transaction update DB
     const productUpdated = await prisma.$transaction(async (tx) => {
-      // Xóa description trước (bao gồm image của nó)
-      await Promise.all(
-        existing.description.map(async (d) => {
-          if (d.imageId) {
-            await tx.image.delete({ where: { id: d.imageId } });
-          }
-          await tx.description.delete({ where: { id: d.id } });
-        })
-      );
-      const product = await tx.product.update({
-        where: {
-          id: productId,
-        },
+      return tx.product.update({
+        where: { id: productId },
         data: {
           label,
-          category: {
-            connect: {
-              id: category.id,
-            },
-          },
+          category: { connect: { id: category.id } },
           images: {
             deleteMany: {},
-            create: images.map((img) => ({
-              href: img.href,
-              alt: img.alt,
-            })),
+            create: images.map((img) => ({ href: img.href, alt: img.alt })),
           },
           productMass: {
             deleteMany: {},
@@ -98,22 +77,15 @@ export async function PUT(
           },
           notion: {
             deleteMany: {},
-            create: notion.map((n) => ({
-              title: n.title,
-              content: n.content,
-            })),
+            create: notion.map((n) => ({ title: n.title, content: n.content })),
           },
           description: {
+            deleteMany: {},
             create: description.map((d) => ({
               title: d.title,
               content: d.content,
               image: d.image
-                ? {
-                    create: {
-                      href: d.image.href,
-                      alt: d.image.alt,
-                    },
-                  }
+                ? { create: { href: d.image.href, alt: d.image.alt } }
                 : undefined,
             })),
           },
@@ -123,36 +95,86 @@ export async function PUT(
           images: true,
           productMass: true,
           notion: true,
-          description: {
-            include: { image: true },
-          },
+          description: { include: { image: true } },
         },
       });
-      return product;
     });
-    // sau khi DB update thành công thì xóa ảnh cũ trên clouflare
+
+    // 2. Xóa hình cũ trên Cloudflare (không còn trong danh sách mới)
     const newImageHrefs = images.map((img) => img.href);
-    const newDescImages = description
+    const newDescHrefs = description
       .map((d) => d.image?.href)
       .filter(Boolean) as string[];
-    // chỉ xóa ảnh cũ không còn trong danh sách mới
     const imagesToDelete = oldProductImages.filter(
       (href) => !newImageHrefs.includes(href)
     );
-
     const descImagesToDelete = oldDescImages.filter(
-      (href) => !newDescImages.includes(href)
+      (href) => !newDescHrefs.includes(href)
     );
-    // await Promise.all([
-    //   await Promise.all(imagesToDelete.map((href) => deleteImage(href))),
-    //   await Promise.all(descImagesToDelete.map((href) => deleteImage(href))),
-    // ]);
     await Promise.all([
       ...imagesToDelete.map((href) => deleteImage(href)),
       ...descImagesToDelete.map((href) => deleteImage(href)),
     ]);
+
+    // 3. Move hình mới từ /temp → folder chính
+    const moveTasks: Promise<void>[] = [];
+    productUpdated.images.forEach((img) => {
+      moveTasks.push(
+        (async () => {
+          try {
+            const newHref = await moveImage(img.href);
+            await prisma.image.update({
+              where: { id: img.id },
+              data: { href: newHref },
+            });
+          } catch (err) {
+            console.error("Failed to move product image", img.href, err);
+          }
+        })()
+      );
+    });
+
+    productUpdated.description.forEach((desc) => {
+      if (desc.image) {
+        moveTasks.push(
+          (async () => {
+            try {
+              const newHref = await moveImage(desc.image!.href);
+              await prisma.image.update({
+                where: { id: desc.image!.id },
+                data: { href: newHref },
+              });
+            } catch (err) {
+              console.error(
+                "Failed to move description image",
+                desc.image!.href,
+                err
+              );
+            }
+          })()
+        );
+      }
+    });
+
+    await Promise.all(moveTasks);
+
+    // 4. Xóa temp images
+    await Promise.all([
+      ...images.map((img) => deleteImage(img.href)),
+      ...description
+        .filter((d) => d.image)
+        .map((d) => deleteImage(d.image!.href)),
+    ]);
+
     return NextResponse.json(productUpdated, { status: 200 });
   } catch (error) {
+    // Nếu transaction fail → dọn sạch temp images
+    await Promise.all([
+      ...images.map((img) => deleteImage(img.href)),
+      ...description
+        .filter((d) => d.image)
+        .map((d) => deleteImage(d.image!.href)),
+    ]);
     return NextResponse.json(
       { error: (error as Error).message },
       { status: 500 }

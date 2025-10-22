@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import {z} from "zod";
+import { z } from "zod";
 import { useFieldArray, UseFormReturn } from "react-hook-form";
 import { productFormSchema } from "../_form schema";
 import { Input } from "@/components/ui/input";

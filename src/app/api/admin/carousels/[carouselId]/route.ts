@@ -2,59 +2,51 @@ import { NextRequest, NextResponse } from "next/server";
 import { carouselFormSchema } from "@/app/(routes)/(admin)/admin/carousels/_form_schema";
 import { z } from "zod";
 import { prisma } from "@/lib/db";
-import { deleteImage } from "@/lib/r2-client";
+import { deleteImage, moveImage } from "@/lib/r2-client";
 
 export async function PUT(
   req: NextRequest,
   { params }: { params: Promise<{ carouselId: string }> }
 ) {
+  const body = await req.json();
+  const parsed = carouselFormSchema.safeParse(body);
+  if (!parsed.success) {
+    const tree = z.treeifyError(parsed.error);
+    return NextResponse.json(
+      { error: tree, message: "Invalid input" },
+      { status: 400 }
+    );
+  }
+  const {
+    image: { href, alt },
+    url,
+  } = parsed.data;
+  const { carouselId } = await params;
+  if (!carouselId) {
+    return NextResponse.json({ error: "Missing carouselId" }, { status: 400 });
+  }
+  const existing = await prisma.carousel.findUnique({
+    where: { id: carouselId },
+    include: { image: true },
+  });
+  if (!existing) {
+    return NextResponse.json({ error: "Carousel not found" }, { status: 404 });
+  }
+  if (
+    existing.image.href === href &&
+    existing.image.alt === alt &&
+    existing.url === url
+  ) {
+    return NextResponse.json(
+      { message: "No changes detected" },
+      { status: 200 }
+    );
+  }
   try {
-    const { carouselId } = await params;
-    if (!carouselId) {
-      return NextResponse.json(
-        { error: "Missing carouselId" },
-        { status: 400 }
-      );
-    }
-    const existing = await prisma.carousel.findUnique({
-      where: { id: carouselId },
-      include: { image: true },
-    });
-    if (!existing) {
-      return NextResponse.json(
-        { error: "Carousel not found" },
-        { status: 404 }
-      );
-    }
-    const body = await req.json();
-    const parsed = carouselFormSchema.safeParse(body);
-    if (!parsed.success) {
-      const tree = z.treeifyError(parsed.error);
-      return NextResponse.json(
-        { error: tree, message: "Invalid input" },
-        { status: 400 }
-      );
-    }
-    const {
-      image: { href, alt },
-      url,
-    } = parsed.data;
-    if (
-      existing.image.href === href &&
-      existing.image.alt === alt &&
-      existing.url === url
-    ) {
-      return NextResponse.json(
-        { message: "No changes detected" },
-        { status: 200 }
-      );
-    }
-
-    const updatedCarousel = await prisma.$transaction(async (tx) => {
+    const result = await prisma.$transaction(async (tx) => {
       // If image href has changed, delete the old image from Cloudflare R2
       if (existing.image.href !== href && existing.imageId) {
-        await deleteImage(existing.image.href);
-        // Update image record in DB
+        // Update new image record in DB
         await tx.image.update({
           where: { id: existing.imageId },
           data: { href, alt },
@@ -67,15 +59,25 @@ export async function PUT(
         });
       }
       // Update carousel record in DB
-      return await tx.carousel.update({
+      const carousel = await tx.carousel.update({
         where: { id: carouselId },
         data: { url },
         include: { image: true },
       });
+      return carousel;
     });
-
-    return NextResponse.json(updatedCarousel, { status: 200 });
+    // Move new image from /temp to /carousel
+    const newhRef = await moveImage(href);
+    await prisma.image.update({
+      where: { id: existing.imageId },
+      data: { href: newhRef, alt },
+    });
+    // Xóa image ở temp
+    await deleteImage(href);
+    return NextResponse.json(result, { status: 200 });
   } catch (error) {
+    // thêm includes để tránh xóa nhầm href nếu fail mà giá trị href ng dùng không thay đổi?
+    if (href.includes("/temp")) await deleteImage(href);
     return NextResponse.json(
       { error: (error as Error).message },
       { status: 500 }

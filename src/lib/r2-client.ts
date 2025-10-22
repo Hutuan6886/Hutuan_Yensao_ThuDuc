@@ -1,3 +1,4 @@
+import { NextResponse } from "next/server";
 import toast from "react-hot-toast";
 
 export const uploadImage = async (
@@ -25,7 +26,7 @@ export const uploadImage = async (
 };
 
 export const deleteImage = async (
-  url: string,
+  href: string,
   signal?: AbortSignal
 ): Promise<boolean> => {
   try {
@@ -35,7 +36,7 @@ export const deleteImage = async (
       {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ url }),
+        body: JSON.stringify({ href }),
         signal,
       }
     );
@@ -44,6 +45,24 @@ export const deleteImage = async (
     return true;
   } catch (error) {
     console.log("CLOUDFLARE_DELETE_ERROR", error);
+    throw error;
+  }
+};
+
+export const moveImage = async (hrefImage: string, signal?: AbortSignal) => {
+  try {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_HOISTING_URL}/api/admin/cloudflare`,
+      {
+        method: "PUT",
+        body: JSON.stringify({ hrefImage }),
+        signal,
+      }
+    );
+    const { success, href } = await res.json();
+    if (!res.ok || !success) throw new Error("Failed to move image!");
+    return href;
+  } catch (error) {
     throw error;
   }
 };

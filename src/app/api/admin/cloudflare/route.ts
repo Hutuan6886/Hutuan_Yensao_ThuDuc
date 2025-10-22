@@ -1,5 +1,9 @@
 import { r2 } from "@/lib/r2";
-import { DeleteObjectCommand, PutObjectCommand } from "@aws-sdk/client-s3";
+import {
+  CopyObjectCommand,
+  DeleteObjectCommand,
+  PutObjectCommand,
+} from "@aws-sdk/client-s3";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
@@ -27,14 +31,14 @@ export async function POST(req: NextRequest) {
     const currentTime: number = Date.now();
     const putObjectCommand = new PutObjectCommand({
       Bucket: process.env.BUCKET_NAME!,
-      Key: `${folder}/${currentTime}-${file.name}`, // http://.../uploads/1728554759000-logo.png
+      Key: `temp/${folder}/${currentTime}-${file.name}`, // http://.../uploads/1728554759000-logo.png
       ContentType: file.type,
       Body: buffer,
       ACL: "bucket-owner-full-control",
     });
 
     await r2.send(putObjectCommand);
-    const url: string = `${process.env.PUBLIC_STORAGE_R2_URL}/${folder}/${currentTime}-${file.name}`;
+    const url: string = `${process.env.PUBLIC_STORAGE_R2_URL}/temp/${folder}/${currentTime}-${file.name}`;
     return NextResponse.json(url, { status: 200 });
   } catch (error) {
     return NextResponse.json({ error: "INTERNAL_ERROR" }, { status: 500 });
@@ -43,15 +47,15 @@ export async function POST(req: NextRequest) {
 
 export async function DELETE(req: NextRequest) {
   try {
-    const { url } = await req.json();
-    if (!url)
+    const { href } = await req.json();
+    if (!href)
       return NextResponse.json({ error: "Missing fileUrl!" }, { status: 400 });
 
     /* // https://pub-3fd9df0a9a034d6fa7c099456764cf28.r2.dev/uploads/1728554759000-logo.png ---> ["uploads","1728554759000-logo.png"] ---> uploads/1728554759000-logo.png -- take 2 last segments of the url
     const key = url.split("/").slice(-2).join("/");
     */
     // Delete 3 first segments of the url
-    const filterArray: string[] = url.split("/");
+    const filterArray: string[] = href.split("/");
     const keyArray: string[] = [];
     for (let i = 3; i < filterArray.length; i++) {
       keyArray.push(filterArray[i]);
@@ -66,5 +70,34 @@ export async function DELETE(req: NextRequest) {
     return NextResponse.json({ success: true });
   } catch (error) {
     return NextResponse.json({ error: "INTERNAL_ERROR" }, { status: 500 });
+  }
+}
+
+export async function PUT(req: NextRequest) {
+  try {
+    const { hrefImage } = await req.json();
+    const filterArray: string[] = hrefImage.split("/");
+    const keyArray: string[] = [];
+    // https://pub-3fd9df0a9a034d6fa7c099456764cf28.r2.dev/temp/folder/.../1728554759000-logo.png -> uploads/.../1728554759000-logo.png
+    for (let i = 4; i < filterArray.length; i++) {
+      keyArray.push(filterArray[i]);
+    }
+    const key: string = keyArray.join("/");
+    const copyObjectCommand = new CopyObjectCommand({
+      Bucket: process.env.BUCKET_NAME,
+      CopySource: `${process.env.BUCKET_NAME}/temp/${key}`,
+      Key: key,
+    });
+    await r2.send(copyObjectCommand);
+    const urlImage: string = `${process.env.PUBLIC_STORAGE_R2_URL}/${key}`;
+    return NextResponse.json(
+      { success: true, href: urlImage },
+      { status: 200 }
+    );
+  } catch (error) {
+    return NextResponse.json(
+      { success: false, message: (error as Error).message },
+      { status: 500 }
+    );
   }
 }

@@ -4,7 +4,7 @@ import toast from "react-hot-toast";
 
 export async function createCarousel(
   data: z.infer<typeof carouselFormSchema>
-): Promise<JSON> {
+): Promise<z.infer<typeof carouselFormSchema>> {
   try {
     const res = await fetch(`/api/admin/carousels`, {
       method: "POST",
@@ -30,7 +30,8 @@ export async function createCarousel(
         color: "#713200",
       },
     });
-    return res.json();
+    const carousel = await res.json();
+    return carousel;
   } catch (error) {
     throw error;
   }
@@ -39,7 +40,7 @@ export async function createCarousel(
 export async function updateCarousel(
   id: string,
   data: z.infer<typeof carouselFormSchema>
-): Promise<JSON> {
+): Promise<z.infer<typeof carouselFormSchema>> {
   try {
     const res = await fetch(`/api/admin/carousels/${id}`, {
       method: "PUT",
@@ -65,7 +66,8 @@ export async function updateCarousel(
         color: "#713200",
       },
     });
-    return res.json();
+    const carousel = await res.json();
+    return carousel;
   } catch (error) {
     throw error;
   }

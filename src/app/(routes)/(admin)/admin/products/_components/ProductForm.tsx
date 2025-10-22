@@ -58,7 +58,6 @@ const ProductForm: React.FC<ProductFormProps> = ({
       });
     }
   };
-  console.log("product form", productForm.watch());
   return (
     <Form {...productForm}>
       <form
@@ -86,7 +85,7 @@ const ProductForm: React.FC<ProductFormProps> = ({
               <FormControl>
                 <MultipleImagesUploader
                   value={field.value}
-                  uploadToFolderName="products/product"
+                  uploadToFolderName="products/images"
                   onUploaded={(images: { href: string; alt: string }[]) => {
                     field.onChange(images);
                   }}

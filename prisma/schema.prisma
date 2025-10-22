@@ -95,11 +95,8 @@ model Description {
     updatedAt DateTime @updatedAt
 
     title String
-
-    imageId String? @unique
-    image Image? @relation("ProductDescriptionImage", fields:[imageId],references: [id])
-    
     content String
+    image Image? @relation("ProductDescriptionImage")
 
     productId String
     product Product @relation(fields:[productId],references: [id],onDelete: Cascade)
@@ -117,7 +114,8 @@ model Image {
     productId String?
     product Product? @relation("ProductImages",fields: [productId], references: [id], onDelete: Cascade)
 
-    description Description? @relation("ProductDescriptionImage")
+    descriptionId String? @unique
+    description Description? @relation("ProductDescriptionImage", fields:[descriptionId], references:[id],onDelete: Cascade)
 }
 
 model Order {

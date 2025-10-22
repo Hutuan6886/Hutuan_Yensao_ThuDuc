@@ -1,15 +1,14 @@
 "use client";
-import { useState } from "react";
 import Image from "next/image";
-import { deleteImage, uploadImage } from "@/lib/r2-client";
-import { Input } from "@/components/ui/input";
-import { CloudUpload } from "lucide-react";
-import { useClickTrigger } from "@/hooks/useClickTrigger";
-import CloseButton from "./CloseButton";
-import { usePopup } from "@/stores/pop-up/usePopup";
-import Popup from "./Popup";
-import useLoading from "@/hooks/useLoading";
 import toast from "react-hot-toast";
+import { deleteImage, uploadImage } from "@/lib/r2-client";
+import { useClickTrigger } from "@/hooks/useClickTrigger";
+import useLoading from "@/hooks/useLoading";
+import { Input } from "@/components/ui/input";
+import { usePopup } from "@/stores/pop-up/usePopup";
+import CloseButton from "./CloseButton";
+import Popup from "./Popup";
+import { CloudUpload } from "lucide-react";
 
 export function ImageUploader({
   value,

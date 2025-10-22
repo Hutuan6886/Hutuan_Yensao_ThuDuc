@@ -31,21 +31,13 @@ const CarouselForm: React.FC<CarouselFormProps> = ({ carouselData }) => {
   const router = useRouter();
   const carouselForm = useForm<z.infer<typeof carouselFormSchema>>({
     resolver: zodResolver(carouselFormSchema),
-    defaultValues: !carouselData
-      ? {
-          image: {
-            href: "",
-            alt: "",
-          },
-          url: "#",
-        }
-      : {
-          image: {
-            href: carouselData.image.href,
-            alt: carouselData.image.alt,
-          },
-          url: carouselData.url,
-        },
+    defaultValues: carouselData ?? {
+      image: {
+        href: "",
+        alt: "",
+      },
+      url: "#",
+    },
   });
   const onSubmit = async (data: z.infer<typeof carouselFormSchema>) => {
     if (!carouselData)
