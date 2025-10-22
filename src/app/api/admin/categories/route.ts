@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
+import { categoryFormSchema } from "@/app/(routes)/(admin)/admin/categories/_form_schema";
+import { z } from "zod";
 import { prisma } from "@/lib/db";
 import {
   buildChildrenCategoryPost,
@@ -7,13 +9,16 @@ import {
 
 export async function POST(req: NextRequest) {
   try {
-    const { name, children } = await req.json();
-    if (!name) {
+    const body = await req.json();
+    const parsed = categoryFormSchema.safeParse(body);
+    if (!parsed.success) {
+      const tree = z.treeifyError(parsed.error);
       return NextResponse.json(
-        { error: "Missing category name" },
+        { error: tree, message: "Invalid input" },
         { status: 400 }
       );
     }
+    const { name, children } = parsed.data;
     const duplicate = await prisma.category.findFirst({
       where: {
         normalizedName: normalize(name),
@@ -22,10 +27,9 @@ export async function POST(req: NextRequest) {
     if (duplicate) {
       return NextResponse.json(
         { error: "Category name already exists" },
-        { status: 404 }
+        { status: 403 }
       );
     }
-    console.log({ name, children });
     const newCategory = await prisma.category.create({
       data: {
         name,

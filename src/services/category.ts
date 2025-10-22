@@ -1,4 +1,4 @@
-import z from "zod";
+import { z } from "zod";
 import { categoryFormSchema } from "@/app/(routes)/(admin)/admin/categories/_form_schema";
 import toast from "react-hot-toast";
 

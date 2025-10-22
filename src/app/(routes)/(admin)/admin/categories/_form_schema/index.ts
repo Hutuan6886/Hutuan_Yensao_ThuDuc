@@ -1,6 +1,5 @@
-import z from "zod";
+import { z } from "zod";
 const namePattern = /^(?=.*\p{L})(?! +$)[\p{L}\p{M} ]+$/u;
-
 export const categoryFormSchema: any = z.lazy(() =>
   z.object({
     name: z.string().min(2, "Name is required").regex(namePattern, {

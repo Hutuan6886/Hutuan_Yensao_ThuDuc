@@ -1,5 +1,4 @@
-import z from "zod";
-
+import {z} from "zod";
 export const massFormSchema = z.object({
   value: z
     .string({ error: "Chỉ nhập chữ số" })

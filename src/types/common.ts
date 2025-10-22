@@ -23,7 +23,10 @@ export type ProductType = {
   updatedAt: Date;
 
   // Category
-  category: CategoryType;
+  category: {
+    id: string;
+    name: string;
+  };
 
   // Images
   images: {

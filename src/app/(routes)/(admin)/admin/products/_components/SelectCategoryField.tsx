@@ -7,24 +7,23 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import type { CategoryType } from "@/types";
+import type { CategoryType, ProductType } from "@/types";
 import { cn } from "@/lib/utils";
 
-interface SelectCategoryProps {
-  categories: CategoryType[]; // toàn bộ tree
-  value?: CategoryType | null; // optional để không ép buộc phải có object dummy
-  onChange: (category: CategoryType | null) => void;
+interface SelectCategoryFieldProps {
+  categories: CategoryType[];
+  value: ProductType["category"];
+  onChange: (category: ProductType["category"] | null) => void;
   placeholder?: string;
   className?: string;
 }
-
-export default function SelectCategory({
+export default function SelectCategoryField({
   categories,
   value,
   onChange,
   placeholder = "Chọn danh mục",
   className,
-}: SelectCategoryProps) {
+}: SelectCategoryFieldProps) {
   /**
    * selectedPath: mảng id theo thứ tự các cấp đã chọn
    * ví dụ: ["id-A", "id-AC"] nếu user chọn A -> AC
@@ -33,15 +32,8 @@ export default function SelectCategory({
 
   // Lưu ý: chạy lại khi categories hoặc value?.id thay đổi
   useEffect(() => {
-    if (!categories || categories.length === 0) {
-      setSelectedPath([]);
-      return;
-    }
-
-    if (!value || !value.id) {
-      setSelectedPath([]);
-      return;
-    }
+    if (!categories || categories.length === 0) return;
+    if (!value || !value.id) return;
     // tìm đường dẫn từ root đến node có id = value.id
     /*
       categories=[
@@ -59,30 +51,37 @@ export default function SelectCategory({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value?.id, categories]);
-  /*
-  levels: mảng từng mức categories để render từng Select
-  levels[0] = categories (root level)
-  levels[1] = children của selectedPath[0], ...
-  categories=[
-    {id:p1,...,children:[{id:cp1-1,...},{id:cp1-2,...},...]},
-    {id:p2,...},children:[{id:cp2-1}]]
-    Nếu chọn p1 => levels = [ [{id:p1,...},{id:p2,...}] , [{id:cp1-1,...},{id:cp1-2,...}] ]
-    Nếu chọn p2 => [ [{id:p1,...},{id:p2,...}] , [{id:cp2-1,...},{id:cp2-2,...}] ]
-    Data ở các cấp levels sau sẽ ứng với cấp chọn trước đó.
-  */
+
   const levels = useMemo(
+    /*
+    levels: mảng từng mức categories để render từng Select
+    levels[0] = categories (root level)
+    levels[1] = children của selectedPath[0], ...
+    categories=[
+      {id:p1,...,children:[{id:cp1-1,...},{id:cp1-2,...},...]},
+      {id:p2,...},children:[{id:cp2-1}]]
+      Nếu chọn p1 => levels = [ [{id:p1,...},{id:p2,...}] , [{id:cp1-1,...},{id:cp1-2,...}] ]
+      Nếu chọn p2 => [ [{id:p1,...},{id:p2,...}] , [{id:cp2-1,...},{id:cp2-2,...}] ]
+      Data ở các cấp levels sau sẽ ứng với cấp chọn trước đó.
+    */
     () => buildCategoryLevels(categories, selectedPath),
     [categories, selectedPath]
   );
 
   const handleSelect = (levelIndex: number, categoryId: string) => {
+    if (!categoryId) return; // guard
     // reset phần sau levelIndex, sau đó thêm categoryId
     const newPath = [...selectedPath.slice(0, levelIndex), categoryId];
     setSelectedPath(newPath);
 
-    // find node cuối cùng, lấy được toàn bộ giá trị của node đó để gửi ra form (bằng duyệt theo newPath)
+    // find node cuối cùng
     const node = findNodeByPath(categories, newPath);
-    onChange(node ?? null);
+
+    // CHỈ gọi onChange nếu tìm được node hợp lệ
+    if (node) {
+      // clone node nếu muốn đảm bảo RHF detect thay đổi
+      onChange({ ...node });
+    }
   };
 
   const clearSelection = () => {
@@ -92,14 +91,17 @@ export default function SelectCategory({
 
   // debug logs (remove after OK)
   // console.log("SelectCategory: categories len", categories?.length, "value id", value?.id, "selectedPath", selectedPath);
-
   return (
     <div className={cn("flex gap-3 flex-wrap items-center", className)}>
       {levels.map((list, idx) => (
         <Select
           key={idx}
-          value={selectedPath[idx] ?? ""}
-          onValueChange={(v) => handleSelect(idx, v)}
+          value={selectedPath[idx] ?? undefined} // dùng undefined thay "" nếu Select chấp nhận
+          onValueChange={(v) => {
+            // ignore falsy values coming from mount/programmatic changes
+            if (!v) return;
+            handleSelect(idx, v);
+          }}
         >
           <SelectTrigger className="w-[200px]">
             <SelectValue placeholder={placeholder} />
@@ -118,7 +120,7 @@ export default function SelectCategory({
         </Select>
       ))}
 
-      <div className="flex items-center gap-2 ml-2">
+      <div className="flex items-center gap-4 ml-2">
         <div className="text-sm text-gray-600">
           {selectedPath.length > 0 ? (
             <span className="font-medium">

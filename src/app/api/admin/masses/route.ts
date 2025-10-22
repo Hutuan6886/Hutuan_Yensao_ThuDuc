@@ -1,16 +1,26 @@
 import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
+import { massFormSchema } from "@/app/(routes)/(admin)/admin/masses/_form_schema";
 import { prisma } from "@/lib/db";
 
 export async function POST(req: NextRequest) {
   try {
-    let { value } = await req.json();
-    value = Number(value);
+    const body = await req.json();
+    const parsed = massFormSchema.safeParse(body);
+    if (!parsed.success) {
+      const tree = z.treeifyError(parsed.error);
+      return NextResponse.json(
+        { error: tree, message: "Invalid input" },
+        { status: 400 }
+      );
+    }
+    const { value } = parsed.data;
     if (!value) {
       return NextResponse.json("Missing mass value", { status: 404 });
     }
     const mass = await prisma.mass.create({
       data: {
-        value,
+        value: Number(value),
       },
       include: {
         productMass: true,

@@ -1,9 +1,9 @@
 "use client";
 import { zodResolver } from "@hookform/resolvers/zod";
-import React from "react";
+import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { productFormSchema } from "../_form schema";
-import z from "zod";
+import { z } from "zod";
 import {
   Form,
   FormControl,
@@ -16,10 +16,13 @@ import { Input } from "@/components/ui/input";
 import MultipleImagesUploader from "@/components/ui/MultipleImagesUploader";
 import { Button } from "@/components/ui/button";
 import { CategoryType, ProductType } from "@/types";
-import SelectCategory from "./SelectCategoryField";
+import SelectCategoryField from "./SelectCategoryField";
 import MassPriceField from "./MassPriceField";
 import { Mass } from "@prisma/client";
 import NotionField from "./NotionField";
+import DescriptionField from "./DescriptionField";
+import { createProduct, updateProduct } from "@/services/product";
+import { useRouter } from "next/navigation";
 
 interface ProductFormProps {
   categories: CategoryType[];
@@ -31,36 +34,43 @@ const ProductForm: React.FC<ProductFormProps> = ({
   masses,
   product,
 }) => {
+  const router = useRouter();
   const productForm = useForm<z.infer<typeof productFormSchema>>({
     resolver: zodResolver(productFormSchema),
-    defaultValues: product
-      ? product
-      : {
-          label: "",
-          images: [],
-          category: {},
-          productMass: [],
-          notion: [],
-          description: [],
-        },
+    defaultValues: product ?? {
+      label: "",
+      images: [],
+      category: {},
+      productMass: [],
+      notion: [],
+      description: [],
+    },
   });
 
-  const onSubmit = (data: z.infer<typeof productFormSchema>) => {
-    console.log("data", data);
+  const onSubmit = async (data: z.infer<typeof productFormSchema>) => {
+    if (!product) {
+      await createProduct(data).then(() => {
+        router.push("/admin/products");
+      });
+    } else {
+      await updateProduct(product.id, data).then(() => {
+        router.push("/admin/products");
+      });
+    }
   };
   console.log("product form", productForm.watch());
   return (
     <Form {...productForm}>
       <form
         onSubmit={productForm.handleSubmit(onSubmit)}
-        className="flex flex-col gap-8"
+        className="flex flex-col gap-16"
       >
         <FormField
           control={productForm.control}
           name="label"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Tên sản phẩm</FormLabel>
+              <FormLabel className="font-semibold">Tên sản phẩm</FormLabel>
               <FormControl>
                 <Input {...field} />
               </FormControl>
@@ -96,9 +106,9 @@ const ProductForm: React.FC<ProductFormProps> = ({
           name="category"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Danh mục sản phẩm</FormLabel>
+              <FormLabel className="font-semibold">Danh mục sản phẩm</FormLabel>
               <FormControl>
-                <SelectCategory
+                <SelectCategoryField
                   categories={categories}
                   value={field.value}
                   onChange={(category) => field.onChange(category)}
@@ -113,7 +123,7 @@ const ProductForm: React.FC<ProductFormProps> = ({
           name="productMass"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Giá sản phẩm</FormLabel>
+              <FormLabel className="font-semibold">Giá sản phẩm</FormLabel>
               <FormControl>
                 <MassPriceField
                   masses={masses}
@@ -130,9 +140,22 @@ const ProductForm: React.FC<ProductFormProps> = ({
           name="notion"
           render={() => (
             <FormItem>
-              <FormLabel>Ghi chú sản phẩm</FormLabel>
+              <FormLabel className="font-semibold">Ghi chú sản phẩm</FormLabel>
               <FormControl>
                 <NotionField form={productForm} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={productForm.control}
+          name="description"
+          render={() => (
+            <FormItem>
+              <FormLabel className="font-semibold">Mô tả sản phẩm</FormLabel>
+              <FormControl>
+                <DescriptionField form={productForm} />
               </FormControl>
               <FormMessage />
             </FormItem>

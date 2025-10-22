@@ -97,7 +97,7 @@ model Description {
     title String
 
     imageId String? @unique
-    image Image? @relation("ProductDescriptionImage", fields:[imageId],references: [id],onDelete:Cascade )
+    image Image? @relation("ProductDescriptionImage", fields:[imageId],references: [id])
     
     content String
 
@@ -109,7 +109,7 @@ model Image {
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 
-    href String @unique
+    href String
     alt String
 
     carousel Carousel? @relation("CarouselImage")

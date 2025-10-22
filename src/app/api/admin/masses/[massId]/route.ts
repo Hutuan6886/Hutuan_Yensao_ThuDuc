@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
+import { massFormSchema } from "@/app/(routes)/(admin)/admin/masses/_form_schema";
+import { z } from "zod";
 import { prisma } from "@/lib/db";
 
 export async function PUT(
@@ -10,20 +12,22 @@ export async function PUT(
     if (!massId) {
       return NextResponse.json({ error: "Missing massId" }, { status: 404 });
     }
-    let { value } = await req.json();
-    value = Number(value);
-    if (!value) {
+    const body = await req.json();
+    const parsed = massFormSchema.safeParse(body);
+    if (!parsed.success) {
+      const tree = z.treeifyError(parsed.error);
       return NextResponse.json(
-        { error: "Missing mass value" },
-        { status: 404 }
+        { error: tree, message: "Invalid input" },
+        { status: 400 }
       );
     }
+    const { value } = parsed.data;
     const mass = await prisma.mass.update({
       where: {
         id: massId,
       },
       data: {
-        value,
+        value: Number(value),
       },
       include: {
         productMass: true,

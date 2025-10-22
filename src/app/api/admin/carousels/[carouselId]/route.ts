@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
+import { carouselFormSchema } from "@/app/(routes)/(admin)/admin/carousels/_form_schema";
+import { z } from "zod";
 import { prisma } from "@/lib/db";
 import { deleteImage } from "@/lib/r2-client";
 
@@ -14,16 +16,6 @@ export async function PUT(
         { status: 400 }
       );
     }
-    const {
-      image: { href, alt },
-      url,
-    } = await req.json();
-    if (!href || !alt) {
-      return NextResponse.json(
-        { error: "Missing image href or alt" },
-        { status: 400 }
-      );
-    }
     const existing = await prisma.carousel.findUnique({
       where: { id: carouselId },
       include: { image: true },
@@ -34,6 +26,19 @@ export async function PUT(
         { status: 404 }
       );
     }
+    const body = await req.json();
+    const parsed = carouselFormSchema.safeParse(body);
+    if (!parsed.success) {
+      const tree = z.treeifyError(parsed.error);
+      return NextResponse.json(
+        { error: tree, message: "Invalid input" },
+        { status: 400 }
+      );
+    }
+    const {
+      image: { href, alt },
+      url,
+    } = parsed.data;
     if (
       existing.image.href === href &&
       existing.image.alt === alt &&

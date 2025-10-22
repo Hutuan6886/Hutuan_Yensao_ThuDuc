@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 
 import { CarouselType } from "@/types";
 import { createCarousel, updateCarousel } from "@/services/carousel";
-import { CarouselFormSchema } from "../_form_schema";
+import { carouselFormSchema } from "../_form_schema";
 import useLoading from "@/hooks/useLoading";
 
 import { Button } from "@/components/ui/button";
@@ -29,8 +29,8 @@ interface CarouselFormProps {
 
 const CarouselForm: React.FC<CarouselFormProps> = ({ carouselData }) => {
   const router = useRouter();
-  const carouselForm = useForm<z.infer<typeof CarouselFormSchema>>({
-    resolver: zodResolver(CarouselFormSchema),
+  const carouselForm = useForm<z.infer<typeof carouselFormSchema>>({
+    resolver: zodResolver(carouselFormSchema),
     defaultValues: !carouselData
       ? {
           image: {
@@ -47,7 +47,7 @@ const CarouselForm: React.FC<CarouselFormProps> = ({ carouselData }) => {
           url: carouselData.url,
         },
   });
-  const onSubmit = async (data: z.infer<typeof CarouselFormSchema>) => {
+  const onSubmit = async (data: z.infer<typeof carouselFormSchema>) => {
     if (!carouselData)
       await createCarousel(data).finally(() => router.push("/admin/carousels"));
     else

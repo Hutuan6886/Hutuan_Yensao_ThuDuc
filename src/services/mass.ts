@@ -1,4 +1,4 @@
-import z from "zod";
+import {z} from "zod";
 import { massFormSchema } from "@/app/(routes)/(admin)/admin/masses/_form_schema";
 import toast from "react-hot-toast";
 

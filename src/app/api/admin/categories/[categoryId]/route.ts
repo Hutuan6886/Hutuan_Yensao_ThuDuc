@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
+import { categoryFormSchema } from "@/app/(routes)/(admin)/admin/categories/_form_schema";
 import { prisma } from "@/lib/db";
-import { Category } from "@prisma/client";
 import { CategoryType } from "@/types";
 import {
   buildChildrenCategoryPut,
@@ -23,20 +24,16 @@ export async function PUT(
   */
   try {
     const { categoryId } = await params;
-    const { name, children } = await req.json();
-
-    if (!categoryId) {
+    const body = await req.json();
+    const parsed = categoryFormSchema.safeParse(body);
+    if (!parsed.success) {
+      const tree = z.treeifyError(parsed.error);
       return NextResponse.json(
-        { error: "Missing categoryId" },
+        { error: tree, message: "Invalid input" },
         { status: 400 }
       );
     }
-    if (!name) {
-      return NextResponse.json(
-        { error: "Missing category name value" },
-        { status: 404 }
-      );
-    }
+    const { name, children } = parsed.data;
     const existing = await prisma.category.findUnique({
       where: {
         id: categoryId,

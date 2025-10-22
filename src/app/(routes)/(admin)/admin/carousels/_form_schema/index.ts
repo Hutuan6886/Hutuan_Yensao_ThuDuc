@@ -1,8 +1,8 @@
-import z from "zod";
+import {z} from "zod";
 
 const hrefPattern = /^https?:\/\/pub-[a-f0-9]{32}\.r2\.dev(\/[\w.-]+)*$/i;
 const urlPattern = /^https?:\/\/[a-z0-9.-]+\/user\/[a-z0-9-]+$/i;
-export const CarouselFormSchema = z.object({
+export const carouselFormSchema = z.object({
   image: z.object({
     href: z
       .string()

@@ -1,3 +1,4 @@
+import ActionTableButton from "@/components/ui/ActionTableButton";
 import { Mass } from "@prisma/client";
 import { ColumnDef } from "@tanstack/react-table";
 import { format } from "date-fns";
@@ -11,7 +12,7 @@ export const columns = ({
 }): ColumnDef<Mass>[] => [
   {
     accessorKey: "value",
-    header: "Giá trị",
+    header: () => <div className="font-semibold">Giá trị</div>,
     cell: ({ getValue }) => {
       return (
         <div>
@@ -22,7 +23,7 @@ export const columns = ({
   },
   {
     accessorKey: "createdAt",
-    header: "Thời gian tạo",
+    header: () => <div className="font-semibold">Thời gian tạo</div>,
     cell: ({ getValue }) =>
       getValue<Date>()
         ? format(new Date(getValue<Date>()), "dd/MM/yyyy HH:mm")
@@ -30,7 +31,7 @@ export const columns = ({
   },
   {
     accessorKey: "updatedAt",
-    header: "Thời gian cập nhật",
+    header: () => <div className="font-semibold">Thời gian cập nhật</div>,
     cell: ({ getValue }) =>
       getValue<Date>()
         ? format(new Date(getValue<Date>()), "dd/MM/yyyy HH:mm")
@@ -43,18 +44,12 @@ export const columns = ({
       const mass = row.original;
       return (
         <div className="flex gap-4">
-          <button
-            className="text-blue-500 hover:underline transition cursor-pointer"
-            onClick={() => onEdit(mass.id)}
-          >
+          <ActionTableButton variant="edit" onClick={() => onEdit(mass.id)}>
             Chỉnh sửa
-          </button>
-          <button
-            className="text-red-500 hover:underline transition cursor-pointer"
-            onClick={() => onDelete(mass.id)}
-          >
+          </ActionTableButton>
+          <ActionTableButton variant="delete" onClick={() => onDelete(mass.id)}>
             Xóa
-          </button>
+          </ActionTableButton>
         </div>
       );
     },

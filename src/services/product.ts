@@ -1,12 +1,12 @@
 import { z } from "zod";
-import { carouselFormSchema } from "@/app/(routes)/(admin)/admin/carousels/_form_schema";
+import { productFormSchema } from "@/app/(routes)/(admin)/admin/products/_form schema";
 import toast from "react-hot-toast";
 
-export async function createCarousel(
-  data: z.infer<typeof carouselFormSchema>
+export async function createProduct(
+  data: z.infer<typeof productFormSchema>
 ): Promise<JSON> {
   try {
-    const res = await fetch(`/api/admin/carousels`, {
+    const res = await fetch(`/api/admin/products`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -14,16 +14,16 @@ export async function createCarousel(
       body: JSON.stringify(data),
     });
     if (!res.ok) {
-      toast.error("Thêm mới ảnh bìa thất bại", {
+      toast.error("Thêm mới sản phẩm thất bại", {
         style: {
           border: "1px solid #713200",
           padding: "16px",
           color: "#713200",
         },
       });
-      throw new Error("Failed to create carousel");
+      throw new Error("Failed to create product");
     }
-    toast.success("Thêm mới ảnh bìa thành công", {
+    toast.success("Thêm mới sản phẩm thành công", {
       style: {
         border: "1px solid #713200",
         padding: "16px",
@@ -36,12 +36,12 @@ export async function createCarousel(
   }
 }
 
-export async function updateCarousel(
+export async function updateProduct(
   id: string,
-  data: z.infer<typeof carouselFormSchema>
+  data: z.infer<typeof productFormSchema>
 ): Promise<JSON> {
   try {
-    const res = await fetch(`/api/admin/carousels/${id}`, {
+    const res = await fetch(`/api/admin/products/${id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -49,16 +49,16 @@ export async function updateCarousel(
       body: JSON.stringify(data),
     });
     if (!res.ok) {
-      toast.error("Cập nhật ảnh bìa thất bại", {
+      toast.error("Cập nhật sản phẩm thất bại", {
         style: {
           border: "1px solid #713200",
           padding: "16px",
           color: "#713200",
         },
       });
-      throw new Error("Failed to update carousel");
+      throw new Error("Failed to update product");
     }
-    toast.success("Cập nhật ảnh bìa thành công", {
+    toast.success("Cập nhật sản phẩm thành công", {
       style: {
         border: "1px solid #713200",
         padding: "16px",
@@ -71,13 +71,13 @@ export async function updateCarousel(
   }
 }
 
-export async function deleteCarousel(
+export async function DeleteProduct(
   id: string,
   signal?: AbortSignal
 ): Promise<boolean> {
   try {
     if (signal?.aborted) return false;
-    const res = await fetch(`/api/admin/carousels/${id}`, {
+    const res = await fetch(`/api/admin/products/${id}`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
@@ -85,16 +85,16 @@ export async function deleteCarousel(
       signal,
     });
     if (!res.ok) {
-      toast.error("Xóa ảnh bìa thất bại", {
+      toast.error("Xóa sản phẩm thất bại", {
         style: {
           border: "1px solid #713200",
           padding: "16px",
           color: "#713200",
         },
       });
-      throw new Error("Failed to delete carousel");
+      throw new Error("Failed to delete product");
     }
-    toast.success("Xóa ảnh bìa thành công", {
+    toast.success("Xóa sản phẩm thành công", {
       style: {
         border: "1px solid #713200",
         padding: "16px",

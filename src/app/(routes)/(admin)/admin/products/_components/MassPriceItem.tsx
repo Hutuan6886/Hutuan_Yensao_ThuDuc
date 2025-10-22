@@ -45,6 +45,7 @@ const MassPriceItem: React.FC<MassPriceItemProps> = ({
           type="checkbox"
           className="size-4 cursor-pointer"
           value={mass.id}
+          checked={checked}
           onChange={(e: ChangeEvent<HTMLInputElement>) =>
             onCheckboxChange(e.target.value, e.target.checked)
           }
@@ -58,6 +59,7 @@ const MassPriceItem: React.FC<MassPriceItemProps> = ({
           <div className="col-span-1 grid grid-cols-2 items-center gap-6">
             <Input
               type="number"
+              value={value.price || ""}
               placeholder="Giá"
               onChange={(e: ChangeEvent<HTMLInputElement>) =>
                 onPriceChange(mass.id, "price", Number(e.target.value))
@@ -72,6 +74,7 @@ const MassPriceItem: React.FC<MassPriceItemProps> = ({
           <div className="col-span-1 grid grid-cols-2 items-center gap-6">
             <Input
               type="number"
+              value={value.discount || ""}
               placeholder="Giảm (%)"
               onChange={(e: ChangeEvent<HTMLInputElement>) =>
                 onPriceChange(mass.id, "discount", Number(e.target.value))

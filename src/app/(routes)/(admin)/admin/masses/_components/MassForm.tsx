@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import { useForm } from "react-hook-form";
-import z from "zod";
+import {z} from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Mass } from "@prisma/client";
 import { massFormSchema } from "../_form_schema";

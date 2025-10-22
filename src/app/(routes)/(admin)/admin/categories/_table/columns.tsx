@@ -1,4 +1,5 @@
 "use client";
+import ActionTableButton from "@/components/ui/ActionTableButton";
 import { CategoryType } from "@/types";
 import { ColumnDef } from "@tanstack/react-table";
 import { format } from "date-fns";
@@ -12,14 +13,17 @@ export const columns = ({
 }): ColumnDef<CategoryType>[] => [
   {
     accessorKey: "name",
-    header: "Tên danh mục",
+    header: () => <div className="font-semibold">Tên danh mục</div>,
     cell: ({ row, getValue }) => {
       const category = row.original;
       const level = row.depth ?? 0; // row.depth có thể dùng để indent
       return (
-        <div style={{ paddingLeft: `${level * 20}px` }}>
-          {getValue<string>()}{" "}
-          {category.children.length > 0 && (
+        <div
+          style={{ paddingLeft: `${level * 20}px` }}
+          className="flex flex-row items-center gap-2"
+        >
+          {getValue<string>()}
+          {category.children && category.children.length > 0 && (
             <span className="text-sm text-gray-500">
               ({category.children.length})
             </span>
@@ -30,7 +34,7 @@ export const columns = ({
   },
   {
     accessorKey: "createdAt",
-    header: "Thời gian tạo",
+    header: () => <div className="font-semibold">Thời gian tạo</div>,
     cell: ({ getValue }) =>
       getValue<Date>()
         ? format(new Date(getValue<Date>()), "dd/MM/yyyy HH:mm")
@@ -38,7 +42,7 @@ export const columns = ({
   },
   {
     accessorKey: "updatedAt",
-    header: "Thời gian cập nhật",
+    header: () => <div className="font-semibold">Thời gian cập nhật</div>,
     cell: ({ getValue }) =>
       getValue<Date>()
         ? format(new Date(getValue<Date>()), "dd/MM/yyyy HH:mm")
@@ -54,18 +58,15 @@ export const columns = ({
       if (level !== 0) return null;
       return (
         <div className="flex gap-4">
-          <button
-            className="text-blue-500 hover:underline transition cursor-pointer"
-            onClick={() => onEdit(category.id)}
-          >
+          <ActionTableButton variant="edit" onClick={() => onEdit(category.id)}>
             Chỉnh sửa
-          </button>
-          <button
-            className="text-red-500 hover:underline transition cursor-pointer"
+          </ActionTableButton>
+          <ActionTableButton
+            variant="delete"
             onClick={() => onDelete(category.id)}
           >
             Xóa
-          </button>
+          </ActionTableButton>
         </div>
       );
     },

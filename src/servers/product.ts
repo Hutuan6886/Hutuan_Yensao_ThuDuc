@@ -16,7 +16,9 @@ export async function getProducts(): Promise<ProductType[]> {
       },
       productMass: true,
       notion: true,
-      description: true,
+      description: {
+        include: { image: true },
+      },
     },
   });
 }
@@ -39,7 +41,9 @@ export async function getProductById(id: string): Promise<ProductType | null> {
       },
       productMass: true,
       notion: true,
-      description: true,
+      description: {
+        include: { image: true },
+      },
     },
   });
 }

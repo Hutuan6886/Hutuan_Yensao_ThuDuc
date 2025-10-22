@@ -13,6 +13,8 @@ import { Button } from "@/components/ui/button";
 import { Plus, Trash } from "lucide-react";
 import { CategoryType } from "@/types";
 import { NestedCategorySchema } from "../_form_schema";
+import DeleteFieldArrayButton from "@/components/ui/DeleteFieldArrayButton";
+import AddFieldArrayButton from "@/components/ui/AddFieldArrayButton";
 
 interface NestedCategoryFieldsProps {
   form: UseFormReturn<NestedCategorySchema>;
@@ -74,27 +76,18 @@ const NestedCategoryFields: React.FC<NestedCategoryFieldsProps> = ({
               depth={depth + 1}
               categoryData={categoryData}
             />
-            <Button
-              type="button"
-              variant="ghost"
-              className="text-red-500 text-sm mt-1 cursor-pointer"
+            <DeleteFieldArrayButton
+              label="Xóa danh mục con"
               onClick={() => remove(index)}
-            >
-              <Trash className="w-4 h-4 mr-1" /> Xóa danh mục con
-            </Button>
+            />
           </div>
         ))}
         {/* Add Subcategory */}
         {depth < MAX_DEPTH && (
-          <Button
-            type="button"
-            size="sm"
-            variant="secondary"
-            className="cursor-pointer"
+          <AddFieldArrayButton
+            label="Thêm danh mục con"
             onClick={() => append({ name: "", children: [] })}
-          >
-            <Plus className="w-4 h-4 mr-1" /> Thêm danh mục con
-          </Button>
+          />
         )}
       </div>
     </div>
