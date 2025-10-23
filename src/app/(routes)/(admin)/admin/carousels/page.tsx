@@ -1,9 +1,8 @@
 import React from "react";
-import { prisma } from "@/lib/db";
+import { getCarousels } from "@/servers/carousel";
 import { CarouselType } from "@/types";
 import CarouselsList from "./_components/CarouselsList";
 import LabelAndCreateBtn from "@/components/admin/LabelOfPage/LabelAndCreateBtn";
-import { getCarousels } from "@/servers/carousel";
 const CarouselsPage = async () => {
   const data: CarouselType[] = await getCarousels();
   return (

@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { productFormSchema } from "@/app/(routes)/(admin)/admin/products/_form schema";
 import { deleteImage, moveImage } from "@/lib/r2-client";
+import backgroundJob from "../../_helpers";
 
 export async function POST(req: NextRequest) {
   const body = await req.json();
@@ -59,11 +60,8 @@ export async function POST(req: NextRequest) {
             })),
           },
         },
-        include: {
-          category: true,
+        select: {
           images: true,
-          productMass: true,
-          notion: true,
           description: {
             include: { image: true },
           },
@@ -71,40 +69,44 @@ export async function POST(req: NextRequest) {
       });
       return product;
     });
-    // Move all product images và description images nếu có
-    await Promise.all([
-      ...productCreated.images.map(async (img) => {
-        const newHref = await moveImage(img.href);
-        return prisma.image.update({
-          where: { id: img.id },
-          data: { href: newHref },
-        });
-      }),
-      ...productCreated.description
-        .filter((d) => d.image)
-        .map(async (d) => {
-          const newHref = await moveImage(d.image!.href);
+    backgroundJob(async () => {
+      // Move all product images và description images nếu có
+      await Promise.all([
+        ...productCreated.images.map(async (img) => {
+          const newHref = await moveImage(img.href);
           return prisma.image.update({
-            where: { id: d.image!.id },
+            where: { id: img.id },
             data: { href: newHref },
           });
         }),
-    ]);
-    // Xóa image cũ trong /temp
-    await Promise.all([
-      ...images.map((img) => deleteImage(img.href)),
-      ...description
-        .filter((d) => d.image)
-        .map((d) => deleteImage((d.image as { href: string }).href)),
-    ]);
-    return NextResponse.json(productCreated, { status: 200 });
+        ...productCreated.description
+          .filter((d) => d.image)
+          .map(async (d) => {
+            const newHref = await moveImage(d.image!.href);
+            return prisma.image.update({
+              where: { id: d.image!.id },
+              data: { href: newHref },
+            });
+          }),
+      ]);
+      // Xóa image cũ trong /temp
+      await Promise.all([
+        ...images.map((img) => deleteImage(img.href)),
+        ...description
+          .filter((d) => d.image)
+          .map((d) => deleteImage((d.image as { href: string }).href)),
+      ]);
+    });
+    return NextResponse.json({ success: true }, { status: 200 });
   } catch (error) {
-    await Promise.all([
-      ...images.map((img) => deleteImage(img.href)),
-      ...description
-        .filter((d) => d.image)
-        .map((d) => deleteImage(d.image!.href)),
-    ]);
+    backgroundJob(async () => {
+      await Promise.all([
+        ...images.map((img) => deleteImage(img.href)),
+        ...description
+          .filter((d) => d.image)
+          .map((d) => deleteImage(d.image!.href)),
+      ]);
+    });
     return NextResponse.json(
       { error: (error as Error).message },
       { status: 500 }

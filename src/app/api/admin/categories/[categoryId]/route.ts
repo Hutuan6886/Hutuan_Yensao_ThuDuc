@@ -22,100 +22,95 @@ export async function PUT(
     Không để duplicate (vì normalizedName là @unique).
     Giới hạn depth tối đa là 3 cấp (parent -> child -> grandchild).
   */
-  try {
-    const { categoryId } = await params;
-    const body = await req.json();
-    const parsed = categoryFormSchema.safeParse(body);
-    if (!parsed.success) {
-      const tree = z.treeifyError(parsed.error);
-      return NextResponse.json(
-        { error: tree, message: "Invalid input" },
-        { status: 400 }
-      );
-    }
-    const { name, children } = parsed.data;
-    const existing = await prisma.category.findUnique({
-      where: {
-        id: categoryId,
+  const { categoryId } = await params;
+  const existing = await prisma.category.findUnique({
+    where: {
+      id: categoryId,
+    },
+    include: {
+      children: {
+        include: {
+          children: true,
+        },
       },
-      include: {
-        children: {
-          include: {
-            children: true,
+    },
+  });
+  if (!existing) {
+    return NextResponse.json({ error: "Category not found" }, { status: 404 });
+  }
+  const body = await req.json();
+  const parsed = categoryFormSchema.safeParse(body);
+  if (!parsed.success) {
+    const tree = z.treeifyError(parsed.error);
+    return NextResponse.json(
+      { error: tree, message: "Invalid input" },
+      { status: 400 }
+    );
+  }
+  const { name, children } = parsed.data;
+  /*Check input children with existing children to get items for creating, updating or deleting
+ - DB hiện có [A, B, C].
+ - Request gửi [B, C, D].
+ --> toCreate = [D], toUpdate = [B, C], toDelete = [A].
+ */
+  //* Tạo mới các phần tử children có id không trùng với các id hoặc (normalizedName) của các phần tử trong DB
+  const toCreate = children.filter(
+    (ic: CategoryType) =>
+      !existing.children.some((ec) => ec.normalizedName === ic.normalizedName)
+  );
+  //* Cập nhật các phần tử gửi lên khi có id trùng với các phần tử  id của children trong DB
+  const toUpdate = children.filter((ic: CategoryType) =>
+    existing.children.some((ec) => ec.id === ic.id)
+  );
+  //* Xóa đi các phần tử trong DB có id không trùng với các id của children từ client gửi lên (vì nếu trong DB còn tồn tại phần tử có id không khớp với client, thì phần tử trong DB đó là rác)
+  const toDelete = existing.children.filter(
+    (ec) => !children.some((ic: CategoryType) => ic.id === ec.id)
+  );
+  try {
+    const result = await prisma.$transaction(async (tx) => {
+      const category = await tx.category.update({
+        where: {
+          id: categoryId,
+        },
+        data: {
+          name,
+          normalizedName: normalize(name),
+          children: {
+            create: toCreate.map((c: CategoryType) =>
+              buildChildrenCategoryPut(c)
+            ),
+            update: toUpdate.map((c: CategoryType) => ({
+              where: {
+                id: c.id,
+              },
+              data: {
+                name: c.name,
+                normalizedName: c.normalizedName,
+                // optionally handle grandchildren here
+                children:
+                  c.children && c.children.length
+                    ? {
+                        upsert: c.children.map((gc) => ({
+                          where: { id: gc.id ?? "" }, // hoặc normalizedName nếu unique trong cùng parent
+                          update: {
+                            name: gc.name,
+                            normalizedName: normalize(gc.name),
+                          },
+                          create: buildChildrenCategoryPut(gc),
+                        })),
+                      }
+                    : undefined,
+              },
+            })),
+            delete: toDelete.map((c: any) => ({
+              id: c.id,
+            })),
           },
         },
-      },
+      });
+      return category;
     });
-    if (!existing) {
-      return NextResponse.json(
-        { error: "Category not found" },
-        { status: 404 }
-      );
-    }
-    /*Check input children with existing children to get items for creating, updating or deleting
-    - DB hiện có [A, B, C].
-    - Request gửi [B, C, D].
-    --> toCreate = [D], toUpdate = [B, C], toDelete = [A].
-    */
-    //* Tạo mới các phần tử children có id không trùng với các id hoặc (normalizedName) của các phần tử trong DB
-    const toCreate = children.filter(
-      (ic: CategoryType) =>
-        !existing.children.some((ec) => ec.normalizedName === ic.normalizedName)
-    );
-    //* Cập nhật các phần tử gửi lên khi có id trùng với các phần tử  id của children trong DB
-    const toUpdate = children.filter((ic: CategoryType) =>
-      existing.children.some((ec) => ec.id === ic.id)
-    );
-    //* Xóa đi các phần tử trong DB có id không trùng với các id của children từ client gửi lên (vì nếu trong DB còn tồn tại phần tử có id không khớp với client, thì phần tử trong DB đó là rác)
-    const toDelete = existing.children.filter(
-      (ec) => !children.some((ic: CategoryType) => ic.id === ec.id)
-    );
-
-    const updated = await prisma.category.update({
-      where: {
-        id: categoryId,
-      },
-      data: {
-        name,
-        normalizedName: normalize(name),
-        children: {
-          create: toCreate.map((c: CategoryType) =>
-            buildChildrenCategoryPut(c)
-          ),
-          update: toUpdate.map((c: CategoryType) => ({
-            where: {
-              id: c.id,
-            },
-            data: {
-              name: c.name,
-              normalizedName: c.normalizedName,
-              // optionally handle grandchildren here
-              children:
-                c.children && c.children.length
-                  ? {
-                      upsert: c.children.map((gc) => ({
-                        where: { id: gc.id ?? "" }, // hoặc normalizedName nếu unique trong cùng parent
-                        update: {
-                          name: gc.name,
-                          normalizedName: normalize(gc.name),
-                        },
-                        create: buildChildrenCategoryPut(gc),
-                      })),
-                    }
-                  : undefined,
-            },
-          })),
-          delete: toDelete.map((c: any) => ({
-            id: c.id,
-          })),
-        },
-      },
-      include: {
-        children: true,
-      },
-    });
-
-    return NextResponse.json(updated, { status: 200 });
+    return NextResponse.json(result, { status: 200 });
   } catch (error: any) {
     return NextResponse.json(
       { error: (error as Error).message },

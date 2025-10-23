@@ -12,6 +12,7 @@ import { usePopup } from "@/stores/pop-up/usePopup";
 import CloseButton from "@/components/ui/CloseButton";
 import Popup from "@/components/ui/Popup";
 import { Copy } from "lucide-react";
+import ActionTableButton from "@/components/ui/ActionTableButton";
 
 interface CarouselItemProps {
   index: number;
@@ -49,15 +50,12 @@ const CarouselItem: React.FC<CarouselItemProps> = ({ index, data }) => {
           closePopup();
         }}
       />
-      <div
-        className="w-full h-auto flex flex-col justify-center bg-gray-100 rounded-lg overflow-hidden hover:bg-gray-200 transition cursor-pointer"
-        onClick={navigateUpdatePage}
-      >
-        <div className="flex flex-row item-center justify-between p-4">
-          <div className="flex flex-row items-center justify-start gap-4">
+      <div className="w-full h-auto flex flex-col justify-center gap-4 overflow-hidden transition cursor-pointer">
+        <div className="flex flex-row items-center justify-between">
+          <div className="flex flex-row items-center justify-start gap-8">
             <h3 className="text-lg font-semibold">Ảnh bìa {index}</h3>
             <div className="flex flex-row items-center gap-2">
-              <p>{data.url}</p>
+              <p className="text-sm text-zinc-500">{data.url}</p>
               <Copy
                 className="size-4 cursor-pointer hover:*:text-blue-600 transition"
                 onClick={(e?: React.MouseEvent<HTMLOrSVGElement>) => {
@@ -67,21 +65,34 @@ const CarouselItem: React.FC<CarouselItemProps> = ({ index, data }) => {
               />
             </div>
           </div>
-          <CloseButton
-            closeFunc={(e?: React.MouseEvent<HTMLElement>) => {
-              if (e) e.stopPropagation();
-              setPopupOpen({
-                title: "Bạn muốn xóa ảnh bìa này?",
-                message: "Ảnh bìa này sẽ bị xóa vĩnh viễn",
-                submitPopup: async () => run(),
-              });
-            }}
-          />
+          <div className="flex flex-row items-center gap-6">
+            <ActionTableButton
+              variant="edit"
+              className="text-sm"
+              onClick={navigateUpdatePage}
+            >
+              Chỉnh sửa
+            </ActionTableButton>
+            <ActionTableButton
+              variant="delete"
+              className="text-sm"
+              onClick={(e?: React.MouseEvent<HTMLElement>) => {
+                if (e) e.stopPropagation();
+                setPopupOpen({
+                  title: "Bạn muốn xóa ảnh bìa này?",
+                  message: "Ảnh bìa này sẽ bị xóa vĩnh viễn",
+                  submitPopup: async () => run(),
+                });
+              }}
+            >
+              Xóa
+            </ActionTableButton>
+          </div>
         </div>
         <div className="relative w-full h-auto">
           <Image
-            src={data.image.href}
-            alt={data.image.alt}
+            src={data.image!.href}
+            alt={data.image!.alt}
             width={1200}
             height={900}
             className="w-full h-auto"

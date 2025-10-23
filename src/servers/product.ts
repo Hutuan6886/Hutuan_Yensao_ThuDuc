@@ -14,7 +14,11 @@ export async function getProducts(): Promise<ProductType[]> {
           },
         },
       },
-      productMass: true,
+      productMass: {
+        include: {
+          mass: true,
+        },
+      },
       notion: true,
       description: {
         include: { image: true },

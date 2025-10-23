@@ -3,6 +3,7 @@ import { carouselFormSchema } from "@/app/(routes)/(admin)/admin/carousels/_form
 import { z } from "zod";
 import { prisma } from "@/lib/db";
 import { deleteImage, moveImage } from "@/lib/r2-client";
+import backgroundJob from "../../_helpers";
 
 export async function POST(req: NextRequest) {
   const body = await req.json();
@@ -22,27 +23,37 @@ export async function POST(req: NextRequest) {
         image: { create: { href: image.href, alt: image.alt } },
         url,
       },
-      include: {
+      select: {
+        id: true,
         image: true,
       },
     });
-    // Carousel tạo thành công thì di chuyển image từ temp tới folder chính trên cloudflare
-    const newhRef = await moveImage(image.href);
-    // Cập nhật lại href của carousel sau khi di chuyển
-    await prisma.image.update({
-      where: {
-        id: carousel.image.id,
-      },
-      data: {
-        href: newhRef,
-      },
+    const response = NextResponse.json(
+      { message: "Carousel created", carouselId: carousel.id },
+      { status: 201 }
+    );
+    // Return respose rồi xử lý clouflare trong background
+    backgroundJob(async () => {
+      // Carousel tạo thành công thì di chuyển image từ temp tới folder chính trên cloudflare
+      const newhRef = await moveImage(image.href);
+      // Cập nhật lại href của carousel sau khi di chuyển
+      await prisma.image.update({
+        where: {
+          id: carousel.image!.id,
+        },
+        data: {
+          href: newhRef,
+        },
+      });
+      // Xóa image ở temp
+      await deleteImage(image.href);
     });
-    // Xóa image ở temp
-    await deleteImage(image.href);
-    return NextResponse.json(carousel, { status: 201 });
+    return response;
   } catch (error) {
-    // Nếu transaction fail, xóa ảnh trong temp để tránh rác
-    if (image) await deleteImage(image.href);
+    backgroundJob(async () => {
+      // Nếu transaction fail, xóa ảnh trong temp để tránh rác
+      if (image) await deleteImage(image.href);
+    });
     return NextResponse.json(
       { error: (error as Error).message },
       { status: 500 }

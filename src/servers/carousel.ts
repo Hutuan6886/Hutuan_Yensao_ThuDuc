@@ -8,9 +8,7 @@ export async function getCarousels(): Promise<CarouselType[]> {
     orderBy: { createdAt: "asc" },
   });
 }
-export async function getCarouselById(
-  id: string
-): Promise<CarouselType | null> {
+export async function getCarouselById(id: string): Promise<CarouselType | null> {
   return prisma.carousel.findFirst({
     where: { id },
     include: {

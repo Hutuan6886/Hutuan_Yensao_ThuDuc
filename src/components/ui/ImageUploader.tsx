@@ -15,7 +15,7 @@ export function ImageUploader({
   uploadToFolderName,
   onUploaded,
 }: {
-  value?: { href?: string; alt?: string };
+  value?: { href?: string; alt?: string } | null;
   uploadToFolderName: string;
   onUploaded: (url: string, alt: string) => void;
 }) {
@@ -36,7 +36,7 @@ export function ImageUploader({
     await uploadImage(`${uploadToFolderName}`, file)
       .then((url) => {
         // Gửi kết quả ra ngoài cho form
-        onUploaded(url, `Đây là ảnh bìa ${file.name} cửa hàng Yến Sào Thủ Đức`);
+        onUploaded(url, `Ảnh ${file.name} cửa hàng Yến Sào Thủ Đức`);
         toast.success("Upload ảnh thành công", {
           style: {
             border: "1px solid #713200",

@@ -9,7 +9,7 @@ import {
 } from "@prisma/client";
 
 export type CarouselType = Carousel & {
-  image: Image;
+  image: Image | null;
 };
 
 export type CategoryType = Category & {
@@ -41,6 +41,9 @@ export type ProductType = {
     price: number;
     discount: number;
     massId: string;
+    mass?: {
+      value: number;
+    };
   }[];
 
   // Notion

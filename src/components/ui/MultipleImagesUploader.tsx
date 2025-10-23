@@ -41,7 +41,7 @@ const MultipleImagesUploader: React.FC<MultipleImagesUploader> = ({
       const imageUploaded = await uploadImage(`${uploadToFolderName}`, file);
       return {
         href: imageUploaded,
-        alt: `Đây là hình ảnh sản phẩm ${file.name} Yến Sào Thủ Đức`,
+        alt: `Ảnh sản phẩm ${file.name} Yến Sào Thủ Đức`,
       };
     });
     await Promise.all(image)

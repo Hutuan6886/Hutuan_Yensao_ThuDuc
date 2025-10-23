@@ -23,6 +23,7 @@ import NotionField from "./NotionField";
 import DescriptionField from "./DescriptionField";
 import { createProduct, updateProduct } from "@/services/product";
 import { useRouter } from "next/navigation";
+import useLoading from "@/hooks/useLoading";
 
 interface ProductFormProps {
   categories: CategoryType[];
@@ -58,10 +59,11 @@ const ProductForm: React.FC<ProductFormProps> = ({
       });
     }
   };
+  const { isLoading, run } = useLoading(onSubmit);
   return (
     <Form {...productForm}>
       <form
-        onSubmit={productForm.handleSubmit(onSubmit)}
+        onSubmit={productForm.handleSubmit(run)}
         className="flex flex-col gap-16"
       >
         <FormField
@@ -160,11 +162,7 @@ const ProductForm: React.FC<ProductFormProps> = ({
             </FormItem>
           )}
         />
-        <Button
-          // disabled={isLoading}
-          type="submit"
-          className="cursor-pointer"
-        >
+        <Button disabled={isLoading} type="submit" className="cursor-pointer">
           {product ? "Cập nhật" : "Tạo mới"}
         </Button>
       </form>
