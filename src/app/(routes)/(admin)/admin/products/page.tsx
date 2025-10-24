@@ -1,9 +1,7 @@
-import LabelAndCreateBtn from "@/components/admin/LabelOfPage/LabelAndCreateBtn";
 import React from "react";
-import DataTable from "./_table/data-table";
 import { getProducts } from "@/servers/product";
-import { columns } from "./_table/columns";
 import DataTableWrapper from "./_components/DataTableWrapper";
+import LabelAndCreateBtn from "@/components/admin/LabelOfPage/LabelAndCreateBtn";
 
 const ProductsPage = async () => {
   const productData = await getProducts();

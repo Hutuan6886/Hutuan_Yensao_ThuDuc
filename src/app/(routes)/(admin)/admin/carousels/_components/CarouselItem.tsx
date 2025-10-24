@@ -50,7 +50,7 @@ const CarouselItem: React.FC<CarouselItemProps> = ({ index, data }) => {
           closePopup();
         }}
       />
-      <div className="w-full h-auto flex flex-col justify-center gap-4 overflow-hidden transition cursor-pointer">
+      <div className="w-full h-auto flex flex-col justify-center gap-4 overflow-hidden transition">
         <div className="flex flex-row items-center justify-between">
           <div className="flex flex-row items-center justify-start gap-8">
             <h3 className="text-lg font-semibold">Ảnh bìa {index}</h3>
@@ -58,10 +58,7 @@ const CarouselItem: React.FC<CarouselItemProps> = ({ index, data }) => {
               <p className="text-sm text-zinc-500">{data.url}</p>
               <Copy
                 className="size-4 cursor-pointer hover:*:text-blue-600 transition"
-                onClick={(e?: React.MouseEvent<HTMLOrSVGElement>) => {
-                  if (e) e.stopPropagation();
-                  copy(data.url);
-                }}
+                onClick={() => copy(data.url)}
               />
             </div>
           </div>
@@ -76,14 +73,13 @@ const CarouselItem: React.FC<CarouselItemProps> = ({ index, data }) => {
             <ActionTableButton
               variant="delete"
               className="text-sm"
-              onClick={(e?: React.MouseEvent<HTMLElement>) => {
-                if (e) e.stopPropagation();
+              onClick={() =>
                 setPopupOpen({
                   title: "Bạn muốn xóa ảnh bìa này?",
                   message: "Ảnh bìa này sẽ bị xóa vĩnh viễn",
                   submitPopup: async () => run(),
-                });
-              }}
+                })
+              }
             >
               Xóa
             </ActionTableButton>

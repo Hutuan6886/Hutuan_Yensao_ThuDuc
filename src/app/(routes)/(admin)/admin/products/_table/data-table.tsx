@@ -19,6 +19,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
+import { DataTablePagination } from "@/components/ui/DataTablePaginationProps";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -35,6 +36,7 @@ const DataTable = <TData extends { id: string }, TValue>({
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   );
+  const [rowSelection, setRowSelection] = useState({});
 
   const productTable = useReactTable({
     data,
@@ -44,16 +46,20 @@ const DataTable = <TData extends { id: string }, TValue>({
     getSortedRowModel: getSortedRowModel(),
     onColumnFiltersChange: setColumnFilters,
     getFilteredRowModel: getFilteredRowModel(),
+    onRowSelectionChange:setRowSelection,
     state: {
       sorting,
       columnFilters,
+      rowSelection
     },
   });
 
   return (
-    <>
+    <div className="flex flex-col gap-6">
       <Input
-        placeholder={`Lọc theo ${activeFilterColumn === "label" ? "tên sản phẩm" : "danh mục sản phẩm"}...`}
+        placeholder={`Lọc theo ${
+          activeFilterColumn === "label" ? "tên sản phẩm" : "danh mục sản phẩm"
+        }...`}
         value={
           (productTable
             .getColumn(activeFilterColumn)
@@ -92,7 +98,7 @@ const DataTable = <TData extends { id: string }, TValue>({
                   data-state={row.getIsSelected() && "selected"}
                 >
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id} className="text-center">
+                    <TableCell key={cell.id}>
                       {flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext()
@@ -114,7 +120,8 @@ const DataTable = <TData extends { id: string }, TValue>({
           </TableBody>
         </Table>
       </div>
-    </>
+      <DataTablePagination table={productTable} />
+    </div>
   );
 };
 

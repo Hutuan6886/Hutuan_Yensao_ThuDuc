@@ -106,3 +106,40 @@ export async function DeleteProduct(
     throw error;
   }
 }
+
+export async function DeleteProducts(
+  ids: string[],
+  signal?: AbortSignal
+): Promise<boolean> {
+  try {
+    if (signal?.aborted) return false;
+    const res = await fetch(`/api/admin/products`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ productId: ids }),
+      signal,
+    });
+    if (!res.ok) {
+      toast.error("Xóa các sản phẩm đã chọn thất bại", {
+        style: {
+          border: "1px solid #713200",
+          padding: "16px",
+          color: "#713200",
+        },
+      });
+      throw new Error("Failed to delete product");
+    }
+    toast.success("Xóa các sản phẩm đã chọn thành công", {
+      style: {
+        border: "1px solid #713200",
+        padding: "16px",
+        color: "#713200",
+      },
+    });
+    return true;
+  } catch (error) {
+    throw error;
+  }
+}

@@ -7,13 +7,40 @@ import ActionTableButton from "@/components/ui/ActionTableButton";
 import { formatterCurrency } from "@/lib/utils";
 import { format } from "date-fns";
 import { ArrowUpDown } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
 
-export const columns = (
-  setActiveFilterColumn: (colId: string) => void
-): ColumnDef<ProductType>[] => [
+export const columns = ({
+  setActiveFilterColumn,
+  onEdit,
+  onDelete,
+}: {
+  setActiveFilterColumn: (colId: string) => void;
+  onEdit: (id: string) => void;
+  onDelete: (id: string) => void;
+}): ColumnDef<ProductType>[] => [
+  {
+    id: "select",
+    header: ({ table }) => (
+      <Checkbox
+        checked={
+          table.getIsAllPageRowsSelected() ||
+          (table.getIsSomePageRowsSelected() && "indeterminate")
+        }
+        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+        aria-label="Select all"
+      />
+    ),
+    cell: ({ row }) => (
+      <Checkbox
+        checked={row.getIsSelected()}
+        onCheckedChange={(value) => row.toggleSelected(!!value)}
+        aria-label="Select row"
+      />
+    ),
+  },
   {
     accessorKey: "images",
-    header: () => <div className="font-semibold text-center">Ảnh </div>,
+    header: () => <div className="font-semibold">Ảnh </div>,
     cell: ({ row }) => (
       <div className="w-16 h-16 relative">
         <Image
@@ -29,11 +56,12 @@ export const columns = (
     accessorKey: "label",
     header: ({ column }) => (
       <Button
-        className={`font-semibold text-center cursor-pointer hover:bg-transparent transition-colors ${
+        className={`font-semibold cursor-pointer hover:bg-transparent transition-colors ${
           column.getIsSorted()
             ? "text-blue-600 hover:text-blue-600"
             : "text-black hover:text-black"
         }`}
+        style={{ padding: "0" }}
         variant="ghost"
         onClick={() => {
           setActiveFilterColumn(column.id);
@@ -41,7 +69,7 @@ export const columns = (
         }}
       >
         Tên sản phẩm
-        <ArrowUpDown className="ml-2 h-4 w-4" />
+        <ArrowUpDown className="size-4" />
       </Button>
     ),
   },
@@ -49,11 +77,12 @@ export const columns = (
     accessorKey: "category.name",
     header: ({ column }) => (
       <Button
-        className={`font-semibold text-center cursor-pointer hover:bg-transparent transition-colors ${
+        className={`font-semibold cursor-pointer hover:bg-transparent transition-colors ${
           column.getIsSorted()
             ? "text-blue-600 hover:text-blue-600"
             : "text-black hover:text-black"
         }`}
+        style={{ padding: "0" }}
         variant="ghost"
         onClick={() => {
           setActiveFilterColumn(column.id);
@@ -61,13 +90,13 @@ export const columns = (
         }}
       >
         Danh mục
-        <ArrowUpDown className="ml-2 h-4 w-4" />
+        <ArrowUpDown className="size-4" />
       </Button>
     ),
   },
   {
     accessorKey: "productMass",
-    header: () => <div className="font-semibold text-center">Giá (VND)</div>,
+    header: () => <div className="font-semibold">Giá (VND)</div>,
     cell: ({ row }) => (
       <div>
         {row.original.productMass.map((item) => (
@@ -84,9 +113,7 @@ export const columns = (
   },
   {
     accessorKey: "createdAt",
-    header: ({ column }) => (
-      <div className="font-semibold text-center">Thời gian tạo</div>
-    ),
+    header: ({ column }) => <div className="font-semibold">Thời gian tạo</div>,
     cell: ({ getValue }) =>
       getValue<Date>()
         ? format(new Date(getValue<Date>()), "dd/MM/yyyy HH:mm")
@@ -94,9 +121,7 @@ export const columns = (
   },
   {
     accessorKey: "updatedAt",
-    header: () => (
-      <div className="font-semibold text-center">Thời gian cập nhật</div>
-    ),
+    header: () => <div className="font-semibold">Thời gian cập nhật</div>,
     cell: ({ getValue }) =>
       getValue<Date>()
         ? format(new Date(getValue<Date>()), "dd/MM/yyyy HH:mm")
@@ -109,13 +134,13 @@ export const columns = (
       <div className="flex gap-4">
         <ActionTableButton
           variant="edit"
-          onClick={() => console.log("edit", row.original.id)}
+          onClick={() => onEdit(row.original.id)}
         >
           Chỉnh sửa
         </ActionTableButton>
         <ActionTableButton
           variant="delete"
-          onClick={() => console.log("delete", row.original.id)}
+          onClick={() => onDelete(row.original.id)}
         >
           Xóa
         </ActionTableButton>

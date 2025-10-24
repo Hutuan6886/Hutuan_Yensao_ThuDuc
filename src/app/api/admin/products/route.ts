@@ -113,3 +113,46 @@ export async function POST(req: NextRequest) {
     );
   }
 }
+
+export async function DELETE(req: NextRequest) {
+  const { productId } = await req.json();
+  if (!Array.isArray(productId) || productId.length === 0) {
+    return NextResponse.json({ error: "Missing product ids" }, { status: 400 });
+  }
+  const products = await prisma.product.findMany({
+    where: { id: { in: productId } },
+    select: {
+      images: true,
+      description: {
+        select: {
+          image: true,
+        },
+      },
+    },
+  });
+  let arrayImagesNeedToDelete: string[] = [];
+  for (const product of products) {
+    arrayImagesNeedToDelete.push(...product.images.map((img) => img.href));
+    arrayImagesNeedToDelete.push(
+      ...product.description.filter((d) => d.image).map((d) => d.image!.href)
+    );
+  }
+  try {
+    await prisma.$transaction(async (tx) => {
+      await tx.product.deleteMany({
+        where: {
+          id: { in: productId },
+        },
+      });
+    });
+    backgroundJob(async () => {
+      await Promise.all(arrayImagesNeedToDelete.map((img) => deleteImage(img)));
+    });
+    return NextResponse.json({ success: true }, { status: 200 });
+  } catch (error) {
+    return NextResponse.json(
+      { error: (error as Error).message },
+      { status: 500 }
+    );
+  }
+}

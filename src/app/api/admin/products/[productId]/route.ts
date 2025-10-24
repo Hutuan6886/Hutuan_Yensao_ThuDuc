@@ -232,12 +232,10 @@ export async function DELETE(
     });
     backgroundJob(async () => {
       await Promise.all([
-        await Promise.all(existing.images.map((img) => deleteImage(img.href))),
-        await Promise.all(
-          existing.description
-            .filter((d) => d.image)
-            .map((d) => deleteImage(d.image!.href))
-        ),
+        ...existing.images.map((img) => deleteImage(img.href)),
+        ...existing.description
+          .filter((d) => d.image)
+          .map((d) => deleteImage(d.image!.href)),
       ]);
     });
     return NextResponse.json({ message: "Product deleted" }, { status: 200 });
