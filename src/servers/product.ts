@@ -18,6 +18,9 @@ export async function getProducts(): Promise<ProductType[]> {
         include: {
           mass: true,
         },
+        orderBy: {
+          price: "asc",
+        },
       },
       notion: true,
       description: {
@@ -43,7 +46,11 @@ export async function getProductById(id: string): Promise<ProductType | null> {
           },
         },
       },
-      productMass: true,
+      productMass: {
+        orderBy: {
+          price: "asc",
+        },
+      },
       notion: true,
       description: {
         include: { image: true },

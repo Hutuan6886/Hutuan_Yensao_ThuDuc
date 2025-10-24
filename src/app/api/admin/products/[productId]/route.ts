@@ -56,6 +56,14 @@ export async function PUT(
     .map((d) => d.image?.href)
     .filter(Boolean) as string[];
 
+  // Diff images để không bị thay đổi index image khi update
+  const toDeleteImages = existing.images.filter(
+    (i) => !images.some((n) => n.href === i.href) //* Nếu image nào trong DB không có trong images thì lọc ra để xóa
+  );
+  const toCreateImages = images.filter(
+    (n) => !oldProductImages.includes(n.href) //* Nếu image mới chưa tồn tại trong DB lọc ra để tạo mới
+  );
+
   try {
     // 1. Transaction update DB
     const productUpdated = await prisma.$transaction(async (tx) => {
@@ -65,8 +73,8 @@ export async function PUT(
           label,
           category: { connect: { id: category.id } },
           images: {
-            deleteMany: {},
-            create: images.map((img) => ({ href: img.href, alt: img.alt })),
+            delete: toDeleteImages.map((img) => ({ id: img.id })),
+            create: toCreateImages,
           },
           productMass: {
             deleteMany: {},
