@@ -44,8 +44,9 @@ const DescriptionField: React.FC<DescriptionFieldProps> = ({ form }) => {
               <ImageUploader
                 value={imageValue}
                 uploadToFolderName="products/description"
-                onUploaded={(href, alt) => {
+                onUploaded={(id, href, alt) => {
                   setValue(`description.${index}.image`, {
+                    id,
                     href,
                     alt,
                   });

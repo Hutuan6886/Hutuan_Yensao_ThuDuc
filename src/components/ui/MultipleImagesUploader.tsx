@@ -1,21 +1,18 @@
 "use client";
-
 import { CloudUpload } from "lucide-react";
-import CloseButton from "./CloseButton";
 import { Input } from "./input";
-import Image from "next/image";
-import { useState } from "react";
 import useLoading from "@/hooks/useLoading";
 import { useClickTrigger } from "@/hooks/useClickTrigger";
 import { deleteImage, uploadImage } from "@/lib/r2-client";
 import { usePopup } from "@/stores/pop-up/usePopup";
 import Popup from "./Popup";
 import toast from "react-hot-toast";
+import MultipleImagesUploaded from "./MultipleImagesUploaded";
 
 interface MultipleImagesUploader {
-  value: { href: string; alt: string }[] | [];
+  value: { id: string; href: string; alt: string }[] | [];
   uploadToFolderName: string;
-  onUploaded: (images: { href: string; alt: string }[]) => void;
+  onUploaded: (images: { id: string; href: string; alt: string }[]) => void;
   onDeleted: (href: string) => void;
 }
 
@@ -40,6 +37,7 @@ const MultipleImagesUploader: React.FC<MultipleImagesUploader> = ({
       // Gửi lên API
       const imageUploaded = await uploadImage(`${uploadToFolderName}`, file);
       return {
+        id: crypto.randomUUID(),
         href: imageUploaded,
         alt: `Ảnh sản phẩm ${file.name} Yến Sào Thủ Đức`,
       };
@@ -134,29 +132,12 @@ const MultipleImagesUploader: React.FC<MultipleImagesUploader> = ({
         </div>
         <div className="flex flex-col gap-2">
           {uploading && <p className="text-sm text-gray-500">Đang upload...</p>}
-          <div className="flex flex-row items-center justify-start gap-6">
-            {value.map((item, i) => (
-              <div key={i} className="relative">
-                <Image
-                  src={item.href}
-                  alt={item.alt}
-                  width={1200}
-                  height={900}
-                  className="size-40 object-cover rounded-md"
-                />
-                <CloseButton
-                  className="absolute top-2 right-2"
-                  closeFunc={() =>
-                    setPopupOpen({
-                      title: "Bạn muốn xóa ảnh này?",
-                      message: "Ảnh này sẽ bị xóa vĩnh viễn",
-                      submitPopup: async () => deleteFile(item.href),
-                    })
-                  }
-                />
-              </div>
-            ))}
-          </div>
+          <MultipleImagesUploaded
+            isDeleting={deleting}
+            data={value}
+            onUploaded={onUploaded}
+            onDeleteImage={deleteFile}
+          />
         </div>
       </div>
     </>

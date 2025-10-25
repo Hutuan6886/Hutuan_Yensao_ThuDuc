@@ -3,7 +3,9 @@ import { z } from "zod";
 export const productFormSchema = z.object({
   label: z.string().nonempty("Vùi lòng tạo tên sản phẩm"),
   images: z
-    .array(z.object({ href: z.string(), alt: z.string() }))
+    .array(
+      z.object({ id: z.string().nonempty(), href: z.string(), alt: z.string() })
+    )
     .min(1, "Vùi lòng thêm hình ảnh sản phẩm"),
   category: z.object({
     id: z.string(),
@@ -34,6 +36,7 @@ export const productFormSchema = z.object({
         title: z.string(),
         image: z
           .object({
+            id: z.string().nonempty(),
             href: z.string(),
             alt: z.string(),
           })

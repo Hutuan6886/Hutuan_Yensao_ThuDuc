@@ -16,11 +16,14 @@ export async function POST(req: NextRequest) {
     );
   }
   const { image, url } = parsed.data;
+  if (!image) {
+    return NextResponse.json({ error: "Missing image" }, { status: 400 });
+  }
   try {
     // Tạo carousel
     const carousel = await prisma.carousel.create({
       data: {
-        image: { create: { href: image.href, alt: image.alt } },
+        image: { create: { id: image.id, href: image.href, alt: image.alt } },
         url,
       },
       select: {

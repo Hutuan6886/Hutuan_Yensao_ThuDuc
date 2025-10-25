@@ -60,6 +60,7 @@ const ProductForm: React.FC<ProductFormProps> = ({
     }
   };
   const { isLoading, run } = useLoading(onSubmit);
+  console.log("product form", productForm.watch());
   return (
     <Form {...productForm}>
       <form
@@ -88,7 +89,9 @@ const ProductForm: React.FC<ProductFormProps> = ({
                 <MultipleImagesUploader
                   value={field.value}
                   uploadToFolderName="products/images"
-                  onUploaded={(images: { href: string; alt: string }[]) => {
+                  onUploaded={(
+                    images: { id: string; href: string; alt: string }[]
+                  ) => {
                     field.onChange(images);
                   }}
                   onDeleted={(href: string) => {

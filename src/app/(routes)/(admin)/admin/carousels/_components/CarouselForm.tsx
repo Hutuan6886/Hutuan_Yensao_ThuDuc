@@ -33,6 +33,7 @@ const CarouselForm: React.FC<CarouselFormProps> = ({ carouselData }) => {
     resolver: zodResolver(carouselFormSchema),
     defaultValues: carouselData ?? {
       image: {
+        id: "",
         href: "",
         alt: "",
       },
@@ -85,9 +86,9 @@ const CarouselForm: React.FC<CarouselFormProps> = ({ carouselData }) => {
                 <ImageUploader
                   value={field.value} // chứa {href, alt}, có thể dùng để hiển thị preview
                   uploadToFolderName="carousels"
-                  onUploaded={(url, alt) => {
+                  onUploaded={(id, href, alt) => {
                     // ✅ Khi upload xong, cập nhật form
-                    field.onChange({ href: url, alt });
+                    field.onChange({ id, href, alt });
                   }}
                 />
               </FormControl>

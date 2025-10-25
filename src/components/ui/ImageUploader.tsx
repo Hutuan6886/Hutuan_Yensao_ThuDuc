@@ -1,12 +1,12 @@
 "use client";
-import Image from "next/image";
 import toast from "react-hot-toast";
+import Image from "next/image";
 import { deleteImage, uploadImage } from "@/lib/r2-client";
 import { useClickTrigger } from "@/hooks/useClickTrigger";
 import useLoading from "@/hooks/useLoading";
 import { Input } from "@/components/ui/input";
-import { usePopup } from "@/stores/pop-up/usePopup";
 import CloseButton from "./CloseButton";
+import { usePopup } from "@/stores/pop-up/usePopup";
 import Popup from "./Popup";
 import { CloudUpload } from "lucide-react";
 
@@ -15,9 +15,9 @@ export function ImageUploader({
   uploadToFolderName,
   onUploaded,
 }: {
-  value?: { href?: string; alt?: string } | null;
+  value?: { id: string; href: string; alt: string } | null;
   uploadToFolderName: string;
-  onUploaded: (url: string, alt: string) => void;
+  onUploaded: (id: string, href: string, alt: string) => void;
 }) {
   const { ref: uploadRef, trigger: openUpload } =
     useClickTrigger<HTMLInputElement>();
@@ -36,7 +36,11 @@ export function ImageUploader({
     await uploadImage(`${uploadToFolderName}`, file)
       .then((url) => {
         // Gửi kết quả ra ngoài cho form
-        onUploaded(url, `Ảnh ${file.name} cửa hàng Yến Sào Thủ Đức`);
+        onUploaded(
+          crypto.randomUUID(),
+          url,
+          `Ảnh ${file.name} cửa hàng Yến Sào Thủ Đức`
+        );
         toast.success("Upload ảnh thành công", {
           style: {
             border: "1px solid #713200",
@@ -64,7 +68,7 @@ export function ImageUploader({
       .then((res) => {
         if (res.valueOf()) {
           // Delete image field
-          onUploaded("", "");
+          onUploaded("", "", "");
           toast.success("Xóa ảnh thành công", {
             style: {
               border: "1px solid #713200",
@@ -109,10 +113,10 @@ export function ImageUploader({
           <div className="relative">
             <Image
               src={value?.href as string}
-              alt={value?.alt || "Preview"}
+              alt={value?.alt as string}
               width={1200}
               height={900}
-              className="w-full h-auto"
+              className="object-cover rounded-md"
             />
             <CloseButton
               className="absolute top-2 right-2"
