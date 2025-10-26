@@ -66,3 +66,27 @@ export const moveImage = async (hrefImage: string, signal?: AbortSignal) => {
     throw error;
   }
 };
+
+export async function deleteMultipleImages(
+  hrefs: string[],
+  signal?: AbortSignal
+): Promise<boolean> {
+  try {
+    if (signal?.aborted) return false;
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_HOISTING_URL}/api/admin/cloudflare/bulk`,
+      {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ hrefs }),
+        signal,
+      }
+    );
+    const data = await res.json();
+    if (!res.ok || !data.success)
+      throw new Error("Failed to delete multiple images!");
+    return true;
+  } catch (error) {
+    throw error;
+  }
+}

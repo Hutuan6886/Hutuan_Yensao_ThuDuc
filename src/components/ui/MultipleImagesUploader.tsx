@@ -3,11 +3,16 @@ import { CloudUpload } from "lucide-react";
 import { Input } from "./input";
 import useLoading from "@/hooks/useLoading";
 import { useClickTrigger } from "@/hooks/useClickTrigger";
-import { deleteImage, uploadImage } from "@/lib/r2-client";
+import {
+  deleteImage,
+  deleteMultipleImages,
+  uploadImage,
+} from "@/lib/r2-client";
 import { usePopup } from "@/stores/pop-up/usePopup";
 import Popup from "./Popup";
 import toast from "react-hot-toast";
 import MultipleImagesUploaded from "./MultipleImagesUploaded";
+import ActionTableButton from "./ActionTableButton";
 
 interface MultipleImagesUploader {
   value: { id: string; href: string; alt: string; index: number }[] | [];
@@ -68,7 +73,7 @@ const MultipleImagesUploader: React.FC<MultipleImagesUploader> = ({
         });
       });
   };
-  const { isLoading: uploading, run: uploadFile } =
+  const { isLoading: isUploading, run: uploadFile } =
     useLoading(handleFileChange);
 
   const handleFileDelete = async (href: string, signal?: AbortSignal) => {
@@ -98,20 +103,37 @@ const MultipleImagesUploader: React.FC<MultipleImagesUploader> = ({
       });
   };
   const {
-    isLoading: deleting,
+    isLoading: isFileDeleting,
     run: deleteFile,
-    cancelRequest,
+    cancelRequest: cancelDeleteFile,
   } = useLoading(handleFileDelete);
+
+  const handleMultipleFilesDelete = async (
+    hrefs: string[],
+    signal?: AbortSignal
+  ) => {
+    await deleteMultipleImages(hrefs).then((res) => {
+      if (res.valueOf()) {
+        onUploaded([]);
+      }
+    });
+  };
+  const {
+    isLoading: isMultipleFilesDeleting,
+    run: deleteMultipleFiles,
+    cancelRequest: cancelDeleteMultipleFiles,
+  } = useLoading(handleMultipleFilesDelete);
   return (
     <>
       <Popup
-        isLoading={deleting}
+        isLoading={isFileDeleting || isMultipleFilesDeleting}
         title={title}
         message={message}
         isOpen={isPopupOpen}
         submitFunc={submitPopup}
         closeFunc={() => {
-          cancelRequest();
+          cancelDeleteFile();
+          cancelDeleteMultipleFiles();
           closePopup();
         }}
       />
@@ -134,14 +156,34 @@ const MultipleImagesUploader: React.FC<MultipleImagesUploader> = ({
             <p className="text-xs">.JPG, .PNG</p>
           </div>
         </div>
-        <div className="flex flex-col gap-2">
-          {uploading && <p className="text-sm text-gray-500">Đang upload...</p>}
+        <div className="flex flex-col gap-4">
           <MultipleImagesUploaded
-            isDeleting={deleting}
+            isDeleting={isFileDeleting}
             data={value}
             onUploaded={onUploaded}
             onDeleteImage={deleteFile}
           />
+          {isUploading ? (
+            <p className="text-sm text-gray-500">Đang upload...</p>
+          ) : (
+            value.length > 0 && (
+              <ActionTableButton
+                variant="delete"
+                className="text-sm"
+                onClick={() =>
+                  // handleMultipleFilesDelete(value.map((img) => img.href))
+                  setPopupOpen({
+                    title: "Bạn muốn xóa tất cả hình ảnh?",
+                    message: "Tất cả hình ảnh này sẽ bị xóa vĩnh viễn",
+                    submitPopup: async () =>
+                      deleteMultipleFiles(value.map((img) => img.href)),
+                  })
+                }
+              >
+                Xóa tất cả
+              </ActionTableButton>
+            )
+          )}
         </div>
       </div>
     </>

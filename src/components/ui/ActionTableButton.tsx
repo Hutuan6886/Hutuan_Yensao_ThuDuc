@@ -16,7 +16,11 @@ const ActionTableButton: React.FC<ActionTableButtonProps> = ({
     "text-red-500": variant === "delete",
   });
   return (
-    <button className={clsx(baseStyles, variantStyles, className)} {...props} />
+    <button
+      type="button"
+      className={clsx(baseStyles, variantStyles, className)}
+      {...props}
+    />
   );
 };
 
