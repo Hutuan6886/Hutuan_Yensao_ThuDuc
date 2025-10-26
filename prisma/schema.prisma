@@ -1,4 +1,3 @@
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -10,146 +9,148 @@ datasource db {
 }
 
 model Carousel {
-    id String @id @unique @default(uuid()) 
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-    
-    url String
+  id        String   @id @unique @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-    image Image? @relation("CarouselImage")
+  url String
+
+  image Image? @relation("CarouselImage")
 }
 
 model Category {
-    id String @id @unique @default(uuid()) 
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+  id        String   @id @unique @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-    name String
-    normalizedName String
+  name           String
+  normalizedName String
 
-    parentId String?    // nếu null => là category cha
-    parent Category?  @relation("CategoryHierarchy", fields: [parentId], references: [id], onDelete: Cascade)
-    children Category[] @relation("CategoryHierarchy")
+  parentId String? // nếu null => là category cha
+  parent   Category?  @relation("CategoryHierarchy", fields: [parentId], references: [id], onDelete: Cascade)
+  children Category[] @relation("CategoryHierarchy")
 
-    product Product[]
+  product Product[]
 }
 
-model Mass{
-    id String @id @unique @default(uuid()) 
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+model Mass {
+  id        String   @id @unique @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-    value Int @unique
+  value Int @unique
 
-    productMass ProductMass[]
+  productMass ProductMass[]
 }
 
 model ProductMass {
-    id String @id @unique @default(uuid()) 
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+  id        String   @id @unique @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-    price Int
-    discount Float
+  price    Int
+  discount Float
 
-    productId String
-    product Product @relation(fields: [productId], references: [id],onDelete: Cascade)
-    massId String
-    mass Mass @relation(fields: [massId], references: [id],onDelete: Cascade)
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  massId    String
+  mass      Mass    @relation(fields: [massId], references: [id], onDelete: Cascade)
 
-    orderItems OrderItem[]
+  orderItems OrderItem[]
 }
 
 model Product {
-    id String @id @unique @default(uuid()) 
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+  id        String   @id @unique @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-    label String
-    categoryId String
-    category Category @relation(fields: [categoryId], references: [id],onDelete: Cascade)
+  label      String
+  categoryId String
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
 
-    images Image[] @relation("ProductImages")
+  images Image[] @relation("ProductImages")
 
-    productMass ProductMass[]
-    notion Notion[]
-    description Description[]
+  productMass ProductMass[]
+  notion      Notion[]
+  description Description[]
 }
 
 model Notion {
-    id String @id @unique @default(uuid()) 
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+  id        String   @id @unique @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-    title String
-    content String
+  title   String
+  content String
 
-    productId String
-    product Product @relation(fields:[productId],references: [id],onDelete: Cascade)
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 }
 
 model Description {
-    id String @id @unique @default(uuid()) 
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+  id        String   @id @unique @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-    title String
-    content String
-    image Image? @relation("ProductDescriptionImage")
+  title   String
+  content String
+  image   Image? @relation("ProductDescriptionImage")
 
-    productId String
-    product Product @relation(fields:[productId],references: [id],onDelete: Cascade)
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 }
+
 model Image {
-    id String @id @unique @default(uuid()) 
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+  id        String   @id @unique @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-    href String
-    alt String
+  href  String
+  alt   String
+  index Int?
 
-    carouselId String? @unique
-    carousel Carousel? @relation("CarouselImage",fields: [carouselId],references: [id], onDelete: Cascade)
+  carouselId String?   @unique
+  carousel   Carousel? @relation("CarouselImage", fields: [carouselId], references: [id], onDelete: Cascade)
 
-    productId String?
-    product Product? @relation("ProductImages",fields: [productId], references: [id], onDelete: Cascade)
+  productId String?
+  product   Product? @relation("ProductImages", fields: [productId], references: [id], onDelete: Cascade)
 
-    descriptionId String? @unique
-    description Description? @relation("ProductDescriptionImage", fields:[descriptionId], references:[id],onDelete: Cascade)
+  descriptionId String?      @unique
+  description   Description? @relation("ProductDescriptionImage", fields: [descriptionId], references: [id], onDelete: Cascade)
 }
 
 model Order {
-    id String @id @unique @default(uuid()) 
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+  id        String   @id @unique @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-    name String
-    phone String
-    address String
-    email String?
+  name    String
+  phone   String
+  address String
+  email   String?
 
-    orderItems OrderItem[]
+  orderItems OrderItem[]
 }
 
 model OrderItem {
-    id String @id @unique @default(uuid()) 
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+  id        String   @id @unique @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-    quantity Int
-    status OrderStatus @default(PENDING)
+  quantity Int
+  status   OrderStatus @default(PENDING)
 
-    orderId String
-    order Order @relation(fields: [orderId], references: [id],onDelete: Cascade)
+  orderId String
+  order   Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
 
-    productMassId String
-    productMass ProductMass @relation(fields: [productMassId], references: [id],onDelete: Cascade)
+  productMassId String
+  productMass   ProductMass @relation(fields: [productMassId], references: [id], onDelete: Cascade)
 }
 
 enum OrderStatus {
-    PENDING
-    PROCESSING
-    SHIPPED
-    DELIVERED
-    CANCELED
+  PENDING
+  PROCESSING
+  SHIPPED
+  DELIVERED
+  CANCELED
 }

@@ -90,7 +90,12 @@ const ProductForm: React.FC<ProductFormProps> = ({
                   value={field.value}
                   uploadToFolderName="products/images"
                   onUploaded={(
-                    images: { id: string; href: string; alt: string }[]
+                    images: {
+                      id: string;
+                      href: string;
+                      alt: string;
+                      index: number;
+                    }[]
                   ) => {
                     field.onChange(images);
                   }}

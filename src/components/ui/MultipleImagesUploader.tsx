@@ -10,9 +10,11 @@ import toast from "react-hot-toast";
 import MultipleImagesUploaded from "./MultipleImagesUploaded";
 
 interface MultipleImagesUploader {
-  value: { id: string; href: string; alt: string }[] | [];
+  value: { id: string; href: string; alt: string; index: number }[] | [];
   uploadToFolderName: string;
-  onUploaded: (images: { id: string; href: string; alt: string }[]) => void;
+  onUploaded: (
+    images: { id: string; href: string; alt: string; index: number }[]
+  ) => void;
   onDeleted: (href: string) => void;
 }
 
@@ -33,13 +35,15 @@ const MultipleImagesUploader: React.FC<MultipleImagesUploader> = ({
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const fileList = e.target.files as FileList;
-    const image = Array.from(fileList).map(async (file) => {
-      // Gửi lên API
+    const startIndex = value.length; // ✅ Bắt đầu từ độ dài hiện có
+    const image = Array.from(fileList).map(async (file, i) => {
+      // Gửi lên Cloudflare
       const imageUploaded = await uploadImage(`${uploadToFolderName}`, file);
       return {
         id: crypto.randomUUID(),
         href: imageUploaded,
         alt: `Ảnh sản phẩm ${file.name} Yến Sào Thủ Đức`,
+        index: startIndex + i,
       };
     });
     await Promise.all(image)

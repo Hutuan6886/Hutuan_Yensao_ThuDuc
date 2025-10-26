@@ -116,7 +116,7 @@ export function ImageUploader({
               alt={value?.alt as string}
               width={1200}
               height={900}
-              className="object-cover rounded-md"
+              className="w-full rounded-md"
             />
             <CloseButton
               className="absolute top-2 right-2"

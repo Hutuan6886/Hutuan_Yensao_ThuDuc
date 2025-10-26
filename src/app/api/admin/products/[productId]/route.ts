@@ -63,6 +63,9 @@ export async function PUT(
   const toCreateImages = images.filter(
     (n) => !oldProductImages.includes(n.href) //* Nếu image mới chưa tồn tại trong DB lọc ra để tạo mới
   );
+  const toUpdateImages = images.filter((n) =>
+    existing.images.some((i) => i.href === n.href)
+  );
 
   try {
     // 1. Transaction update DB
@@ -75,6 +78,10 @@ export async function PUT(
           images: {
             delete: toDeleteImages.map((img) => ({ id: img.id })),
             create: toCreateImages,
+            update: toUpdateImages.map((img) => ({
+              where: { id: img.id },
+              data: { index: img.index },
+            })),
           },
           productMass: {
             deleteMany: {},

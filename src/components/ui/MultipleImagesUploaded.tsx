@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { closestCorners, DndContext, DragEndEvent } from "@dnd-kit/core";
 import {
   arrayMove,
@@ -11,8 +11,10 @@ import { usePopup } from "@/stores/pop-up/usePopup";
 import Popup from "./Popup";
 import ImageUploadItem from "./ImageUploadItem";
 interface MultipleImagesUploadedProps {
-  data: { id: string; href: string; alt: string }[];
-  onUploaded: (images: { id: string; href: string; alt: string }[]) => void;
+  data: { id: string; href: string; alt: string; index: number }[];
+  onUploaded: (
+    images: { id: string; href: string; alt: string; index: number }[]
+  ) => void;
   onDeleteImage: (href: string) => Promise<Promise<void>>;
   isDeleting: boolean;
 }
@@ -22,32 +24,24 @@ const MultipleImagesUploaded: React.FC<MultipleImagesUploadedProps> = ({
   onDeleteImage,
   isDeleting,
 }) => {
-  // const [mount, setMount] = useState(false);
-  // const [items, setItems] = useState(data);
   const { isPopupOpen, setPopupOpen, content, closePopup } = usePopup();
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
     if (!over) return;
     if (active.id !== over.id) {
-      // setItems((pre) => {
-      //   const oldIndex = pre.findIndex((item) => item.id === active.id);
-      //   const newIndex = pre.findIndex((item) => item.id === over.id);
-      //   return arrayMove(pre, oldIndex, newIndex);
-      // });
       const oldIndex = data.findIndex((item) => item.id === active.id);
       const newIndex = data.findIndex((item) => item.id === over.id);
-      onUploaded(arrayMove(data, oldIndex, newIndex));
+      // Di chuyển item
+      const newOrder = arrayMove(data, oldIndex, newIndex);
+
+      // Gán lại index theo vị trí mới
+      const updatedImages = newOrder.map((img, index) => ({
+        ...img,
+        index, // index mới trong mảng
+      }));
+      onUploaded(updatedImages);
     }
   };
-  // useEffect(() => {
-  //   if (!mount) setMount(true);
-  // }, []);
-  // useEffect(() => {
-  //   if (items)
-  //     // Update images list to form
-  //     onUploaded(items);
-  // }, [items]);
-  // if (!mount) return;
   return (
     <>
       <Popup

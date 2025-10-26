@@ -4,7 +4,11 @@ import { ProductType } from "@/types";
 export async function getProducts(): Promise<ProductType[]> {
   return prisma.product.findMany({
     include: {
-      images: true,
+      images: {
+        orderBy: {
+          index: "asc",
+        },
+      },
       category: {
         include: {
           children: {
@@ -36,7 +40,11 @@ export async function getProductById(id: string): Promise<ProductType | null> {
       id,
     },
     include: {
-      images: true,
+      images: {
+        orderBy: {
+          index: "asc",
+        },
+      },
       category: {
         include: {
           children: {

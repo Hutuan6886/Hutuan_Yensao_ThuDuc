@@ -30,6 +30,7 @@ export async function POST(req: NextRequest) {
             create: images.map((img) => ({
               href: img.href,
               alt: img.alt,
+              index: img.index,
             })),
           },
           productMass: {
