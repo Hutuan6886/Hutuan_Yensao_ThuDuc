@@ -62,7 +62,7 @@ const MassForm: React.FC<MassFormProps> = ({ massData }) => {
           name="value"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Khối lượng</FormLabel>
+              <FormLabel className="font-semibold">Khối lượng</FormLabel>
               <FormControl>
                 <Input {...field} placeholder="10" />
               </FormControl>

@@ -62,7 +62,7 @@ const CarouselForm: React.FC<CarouselFormProps> = ({ carouselData }) => {
           name="url"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="">
+              <FormLabel className="font-semibold">
                 Đường dẫn điều hướng cho ảnh bìa:
               </FormLabel>
               <FormControl>

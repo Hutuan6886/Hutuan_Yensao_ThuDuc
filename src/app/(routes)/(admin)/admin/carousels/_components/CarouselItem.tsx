@@ -53,7 +53,7 @@ const CarouselItem: React.FC<CarouselItemProps> = ({ index, data }) => {
       <div className="w-full h-auto flex flex-col justify-center gap-4 overflow-hidden transition">
         <div className="flex flex-row items-center justify-between">
           <div className="flex flex-row items-center justify-start gap-8">
-            <h3 className="text-lg font-semibold">Ảnh bìa {index}</h3>
+            <h4 className="font-semibold">Ảnh bìa {index}</h4>
             <div className="flex flex-row items-center gap-2">
               <p className="text-sm text-zinc-500">{data.url}</p>
               <Copy

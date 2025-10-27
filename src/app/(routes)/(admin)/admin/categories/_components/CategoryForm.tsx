@@ -49,7 +49,6 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ categoryData }) => {
           fieldName="Danh mục chính"
           categoryData={categoryData}
         />
-
         <Button disabled={isLoading} type="submit" className="cursor-pointer">
           {categoryData ? "Cập nhật" : "Tạo mới"}
         </Button>

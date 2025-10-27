@@ -5,6 +5,7 @@ import {
   FormControl,
   FormField,
   FormItem,
+  FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -47,6 +48,7 @@ const NestedCategoryFields: React.FC<NestedCategoryFieldsProps> = ({
         name={baseName}
         render={({ field }) => (
           <FormItem>
+            <FormLabel className="font-semibold"> Tên danh mục</FormLabel>
             <FormControl>
               <Input placeholder={`${fieldName}`} {...field} />
             </FormControl>

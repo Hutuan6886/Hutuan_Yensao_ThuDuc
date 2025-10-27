@@ -38,7 +38,7 @@ const Popup: React.FC<PopupProps> = ({
         className="w-full sm:w-[80%] md:w-[40%] xl:w-[30%] m-auto h-auto flex flex-col gap-3 bg-white rounded-md p-5"
       >
         <div className="flex flex-col gap-1">
-          <h3 className="text-lg font-semibold">{title}</h3>
+          <h4 className="font-semibold">{title}</h4>
           <p className="text-sm text-zinc-600 pl-2">{message}</p>
         </div>
         <div className="w-full flex flex-row items-center justify-end gap-2">

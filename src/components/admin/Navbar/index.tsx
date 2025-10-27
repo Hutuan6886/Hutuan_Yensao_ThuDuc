@@ -27,32 +27,37 @@ const DasboardNavbar: React.FC<DasboardNavbarProps> = ({ className }) => {
   const pathname = usePathname();
   const navbarData = [
     {
-      label: "Dashboard",
+      label: "Trang chủ",
       href: "/admin",
       action: pathname.includes("/admin") && pathname === "/admin",
     },
     {
-      label: "Carousels",
+      label: "Ảnh bìa",
       href: "/admin/carousels",
       action: pathname.includes("/admin/carousels"),
     },
     {
-      label: "Categories",
+      label: "Danh mục",
       href: "/admin/categories",
       action: pathname.includes("/admin/categories"),
     },
     {
-      label: "Mass",
+      label: "Phân loại khối lượng",
       href: "/admin/masses/new",
       action: pathname.includes("/admin/masses"),
     },
     {
-      label: "Products",
+      label: "Sản phẩm",
       href: "/admin/products",
       action: pathname.includes("/admin/products"),
     },
     {
-      label: "Orders",
+      label: "Bài viết",
+      href: "/admin/blogs",
+      action: pathname.includes("/admin/blogs"),
+    },
+    {
+      label: "Đơn đặt hàng",
       href: "/admin/orders",
       action: pathname.includes("/admin/orders"),
     },
