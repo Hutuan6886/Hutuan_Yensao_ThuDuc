@@ -1,5 +1,12 @@
 "use client";
+import React from "react";
 import Tiptap from "@/components/admin/Tiptap";
+import z from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import useLoading from "@/hooks/useLoading";
+import { blogFormSchema } from "../_form_schema";
+import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -10,40 +17,41 @@ import {
 } from "@/components/ui/form";
 import { ImageUploader } from "@/components/ui/ImageUploader";
 import { Input } from "@/components/ui/input";
-import { zodResolver } from "@hookform/resolvers/zod";
-import React from "react";
-import { useForm } from "react-hook-form";
-import z from "zod";
+import { BlogType } from "@/types";
+import { createBlog, updateBlog } from "@/services/blog";
+import { useRouter } from "next/navigation";
 
-const blogFormSchema = z.object({
-  title: z.string().min(3, "Tiêu đề phải có ít nhất 3 ký tự"),
-  content: z.any().refine((data) => !!data, "Nội dung không được trống"),
-  thumbnail: z
-    .object({
-      id: z.string(),
-      href: z.string(),
-      alt: z.string(),
-    })
-    .optional(),
-});
-const BlogForm = () => {
+interface BlogFormProps {
+  blogData: BlogType | null;
+}
+
+const BlogForm: React.FC<BlogFormProps> = ({ blogData }) => {
+  const router = useRouter();
   const blogForm = useForm<z.infer<typeof blogFormSchema>>({
     resolver: zodResolver(blogFormSchema),
-    defaultValues: {
+    defaultValues: blogData ?? {
       title: "",
-      thumbnail: {
-        id: "",
-        href: "",
-        alt: "",
-      },
+      thumbnail: {},
       content: "",
     },
   });
-  const onSubmit = (data: z.infer<typeof blogFormSchema>) => {};
+  const onSubmit = async (data: z.infer<typeof blogFormSchema>) => {
+    console.log("blog form", data);
+    if (!blogData)
+      await createBlog(data).then(() => {
+        router.push("/admin/blogs");
+      });
+    else
+      await updateBlog(blogData.id, data).then(() => {
+        router.push("/admin/blogs");
+      });
+  };
+  const { isLoading, run } = useLoading(onSubmit);
+
   return (
     <Form {...blogForm}>
       <form
-        onSubmit={blogForm.handleSubmit(onSubmit)}
+        onSubmit={blogForm.handleSubmit(run)}
         className="flex flex-col gap-8"
       >
         <FormField
@@ -53,7 +61,7 @@ const BlogForm = () => {
             <FormItem>
               <FormLabel className="font-semibold">Tiêu đề bài viết</FormLabel>
               <FormControl>
-                <Input {...field}/>
+                <Input {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -85,12 +93,18 @@ const BlogForm = () => {
             <FormItem>
               <FormLabel className="font-semibold">Nội dung bài viết</FormLabel>
               <FormControl>
-                <Tiptap />
+                <Tiptap
+                  value={field.value}
+                  onChange={(content) => field.onChange(content)}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
+        <Button disabled={isLoading} type="submit" className="cursor-pointer">
+          {blogData ? "Cập nhật" : "Tạo mới"}
+        </Button>
       </form>
     </Form>
   );

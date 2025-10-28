@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import { useForm } from "react-hook-form";
-import {z} from "zod";
+import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Mass } from "@prisma/client";
 import { massFormSchema } from "../_form_schema";
@@ -17,6 +17,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { createMass, updateMass } from "@/services/mass";
+import useLoading from "@/hooks/useLoading";
 
 interface MassFormProps {
   massData: Mass | null;
@@ -51,10 +52,11 @@ const MassForm: React.FC<MassFormProps> = ({ massData }) => {
         router.refresh();
       });
   };
+  const { isLoading, run } = useLoading(onSubmit);
   return (
     <Form {...massForm}>
       <form
-        onSubmit={massForm.handleSubmit(onSubmit)}
+        onSubmit={massForm.handleSubmit(run)}
         className="flex flex-col gap-8"
       >
         <FormField
@@ -70,11 +72,7 @@ const MassForm: React.FC<MassFormProps> = ({ massData }) => {
             </FormItem>
           )}
         />
-        <Button
-          // disabled={isLoading}
-          type="submit"
-          className="cursor-pointer"
-        >
+        <Button disabled={isLoading} type="submit" className="cursor-pointer">
           {massData ? "Cập nhật" : "Tạo mới"}
         </Button>
       </form>

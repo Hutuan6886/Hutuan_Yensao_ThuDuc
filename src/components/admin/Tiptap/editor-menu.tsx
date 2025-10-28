@@ -24,6 +24,7 @@ import {
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import { Input } from "@/components/ui/input";
 
 type Props = {
   editor: Editor | null;
@@ -35,9 +36,20 @@ export default function EditorMenu({ editor }: Props) {
 
   useEffect(() => {
     if (!editor) return;
-    const update = () => setRender((r) => r + 1);
+    const update = () => {
+      setRender((r) => r + 1);
+      // 🔹 Lấy màu text hiện tại từ marks của editor
+      const currentColor = editor.getAttributes("textStyle")?.color;
+      if (currentColor) {
+        setColor(currentColor);
+      } else {
+        setColor("#000000"); // Mặc định
+      }
+    };
+
     editor.on("selectionUpdate", update);
     editor.on("transaction", update);
+
     return () => {
       editor.off("selectionUpdate", update);
       editor.off("transaction", update);
@@ -158,33 +170,6 @@ export default function EditorMenu({ editor }: Props) {
 
       <Separator orientation="vertical" className="h-5" />
 
-      {/* 🎨 Text color */}
-      <input
-        type="color"
-        value={color}
-        onChange={(e) => {
-          const newColor = e.target.value;
-          setColor(newColor);
-          editor.chain().focus().setColor(newColor).run();
-        }}
-        className="h-8 w-8 cursor-pointer rounded border p-1"
-        title="Chọn màu chữ"
-      />
-
-      {/* 🧹 Reset màu */}
-      <Button
-        variant="ghost"
-        size="icon"
-        onClick={() => {
-          setColor("#000000");
-          editor.chain().focus().unsetColor().run();
-        }}
-      >
-        🧽
-      </Button>
-
-      <Separator orientation="vertical" className="h-5" />
-
       {/* Render từng group riêng biệt */}
       {toolbarGroups.map((group, i) => {
         const activeValues = group.options
@@ -234,31 +219,45 @@ export default function EditorMenu({ editor }: Props) {
           );
         }
       })}
-
       <Separator orientation="vertical" className="h-5" />
-
       {/* Extra buttons: Link, Image */}
-      {/* <Button
-        variant="ghost"
-        size="icon"
-        onClick={() => {
-          const url = prompt("Enter link URL");
-          if (url) editor.chain().focus().setLink({ href: url }).run();
-        }}
-      >
-        <LinkIcon className="w-4 h-4" />
-      </Button>
-
       <Button
+        type="button"
         variant="ghost"
         size="icon"
         onClick={() => {
           const url = prompt("Enter image URL");
-          if (url) editor.chain().focus().setImage({ src: url }).run();
+          // if (url) editor.chain().focus().setImage({ src: url }).run();
         }}
       >
         <ImageIcon className="w-4 h-4" />
-      </Button> */}
+      </Button>
+      <Separator orientation="vertical" className="h-5" />
+      {/* 🎨 Text color */}
+      <Input
+        type="color"
+        value={color}
+        onChange={(e) => {
+          const newColor = e.target.value;
+          setColor(newColor);
+          editor.chain().focus().setColor(newColor).run();
+        }}
+        className="h-8 w-8 cursor-pointer rounded border p-1"
+        title="Chọn màu chữ"
+      />
+
+      {/* 🧹 Reset màu */}
+      <Button
+        type="button"
+        variant="ghost"
+        size="icon"
+        onClick={() => {
+          setColor("#000000");
+          editor.chain().focus().unsetColor().run();
+        }}
+      >
+        🧽
+      </Button>
     </div>
   );
 }

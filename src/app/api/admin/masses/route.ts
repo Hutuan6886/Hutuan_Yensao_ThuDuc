@@ -19,11 +19,8 @@ export async function POST(req: NextRequest) {
       data: {
         value: Number(value),
       },
-      select: {
-        id: true,
-      },
     });
-    return NextResponse.json({ sucees: true }, { status: 201 });
+    return NextResponse.json({ success: true }, { status: 201 });
   } catch (error: any) {
     if (error.code === "P2002") {
       return NextResponse.json(

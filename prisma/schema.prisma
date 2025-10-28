@@ -117,6 +117,9 @@ model Image {
 
   descriptionId String?      @unique
   description   Description? @relation("ProductDescriptionImage", fields: [descriptionId], references: [id], onDelete: Cascade)
+
+  blogId String? @unique
+  blog   Blog?   @relation("BlogThumbnail", fields: [blogId], references: [id], onDelete: Cascade)
 }
 
 model Order {
@@ -153,4 +156,14 @@ enum OrderStatus {
   SHIPPED
   DELIVERED
   CANCELED
+}
+
+model Blog {
+  id        String @id @unique @default(uuid())
+  title     String
+  thumbnail Image? @relation("BlogThumbnail")
+  content   Json
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

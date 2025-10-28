@@ -1,4 +1,5 @@
 import {
+  Blog,
   Carousel,
   Category,
   Description,
@@ -64,4 +65,8 @@ export type ProductType = {
       alt: string;
     } | null;
   }[];
+};
+
+export type BlogType = Blog & {
+  thumbnail: Image | null;
 };

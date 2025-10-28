@@ -29,13 +29,14 @@ export async function PUT(
       { status: 400 }
     );
   }
-  const {
-    image: { href, alt },
-    url,
-  } = parsed.data;
+  const { image, url } = parsed.data;
+  if (!image) {
+    return NextResponse.json({ error: "Missing image" }, { status: 400 });
+  }
+
   if (
-    existing.image!.href === href &&
-    existing.image!.alt === alt &&
+    existing.image!.href === image.href &&
+    existing.image!.alt === image.alt &&
     existing.url === url
   ) {
     return NextResponse.json(
@@ -46,17 +47,17 @@ export async function PUT(
   try {
     await prisma.$transaction(async (tx) => {
       // If image href has changed, delete the old image from Cloudflare R2
-      if (existing.image && existing.image.href !== href) {
+      if (existing.image && existing.image.href !== image.href) {
         // Update new image record in DB
         await tx.image.update({
           where: { id: existing.image.id },
-          data: { href, alt },
+          data: { href: image.href, alt: image.alt },
         });
-      } else if (existing.image && existing.image.alt !== alt) {
+      } else if (existing.image && existing.image.alt !== image.alt) {
         // Only alt text changed, update alt text in DB
         await tx.image.update({
           where: { id: existing.image.id },
-          data: { alt },
+          data: { alt: image.alt },
         });
       }
       // Update carousel record in DB
@@ -72,19 +73,19 @@ export async function PUT(
     );
     backgroundJob(async () => {
       // Move new image from /temp to /carousel
-      const newhRef = await moveImage(href);
+      const newhRef = await moveImage(image.href);
       await prisma.image.update({
         where: { id: existing.image!.id },
-        data: { href: newhRef, alt },
+        data: { href: newhRef, alt: image.alt },
       });
       // Xóa image ở temp
-      await deleteImage(href);
+      await deleteImage(image.href);
     });
     return response;
   } catch (error) {
     backgroundJob(async () => {
       // thêm includes để tránh xóa nhầm href nếu fail mà giá trị href ng dùng không thay đổi?
-      if (href.includes("/temp")) await deleteImage(href);
+      if (image.href.includes("/temp")) await deleteImage(image.href);
     });
     return NextResponse.json(
       { error: (error as Error).message },
@@ -107,7 +108,7 @@ export async function DELETE(
     }
     const existing = await prisma.carousel.findUnique({
       where: { id: carouselId },
-      include: { image: true },
+      select: { image: true },
     });
     if (!existing) {
       return NextResponse.json(
