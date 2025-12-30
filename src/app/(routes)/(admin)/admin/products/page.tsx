@@ -1,6 +1,6 @@
 import React from "react";
 import { getProducts } from "@/servers/product";
-import DataTableWrapper from "./_components/DataTableWrapper";
+import DataTableWrapper from "./_table/DataTableWrapper";
 import LabelAndCreateBtn from "@/components/admin/LabelOfPage/LabelAndCreateBtn";
 
 const ProductsPage = async () => {

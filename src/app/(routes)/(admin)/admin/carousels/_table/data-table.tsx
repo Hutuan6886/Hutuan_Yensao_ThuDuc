@@ -18,78 +18,40 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Input } from "@/components/ui/input";
 import { DataTablePagination } from "@/components/ui/DataTablePaginationProps";
-import { deleteProducts } from "@/services/product";
 import useLoading from "@/hooks/useLoading";
 import { usePopup } from "@/stores/pop-up/usePopup";
-import { useRouter } from "next/navigation";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
-  activeFilterColumn: string;
 }
 
 const DataTable = <TData extends { id: string }, TValue>({
   columns,
   data,
-  activeFilterColumn,
 }: DataTableProps<TData, TValue>) => {
-  const router = useRouter()
-  const [sorting, setSorting] = useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    []
-  );
-  const [rowSelection, setRowSelection] = useState({});
-
-  const productTable = useReactTable({
+  const carouselTable = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
-    onSortingChange: setSorting,
-    getSortedRowModel: getSortedRowModel(),
-    onColumnFiltersChange: setColumnFilters,
-    getFilteredRowModel: getFilteredRowModel(),
-    onRowSelectionChange: setRowSelection,
-    state: {
-      sorting,
-      columnFilters,
-      rowSelection,
-    },
   });
+
   const { setPopupOpen } = usePopup();
   const handleDeleteMultipleRow = async () => {
-    const productsId: string[] = productTable
+    const carouselId: string[] = carouselTable
       .getSelectedRowModel()
       .rows.map((row) => row.original.id);
-    await deleteProducts(productsId);
-    router.refresh();
+    // await deleteProducts(productsId);
   };
   const { isLoading, run } = useLoading(handleDeleteMultipleRow);
 
   return (
     <div className="flex flex-col gap-6">
-      <Input
-        placeholder={`Lọc theo ${
-          activeFilterColumn === "label" ? "tên sản phẩm" : "danh mục sản phẩm"
-        }...`}
-        value={
-          (productTable
-            .getColumn(activeFilterColumn)
-            ?.getFilterValue() as string) ?? ""
-        }
-        onChange={(event) =>
-          productTable
-            .getColumn(activeFilterColumn)
-            ?.setFilterValue(event.target.value)
-        }
-        className="max-w-sm"
-      />
       <div className="overflow-hidden rounded-md border">
         <Table>
           <TableHeader>
-            {productTable.getHeaderGroups().map((headerGroup) => (
+            {carouselTable.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
                   <TableHead key={header.id}>
@@ -105,8 +67,8 @@ const DataTable = <TData extends { id: string }, TValue>({
             ))}
           </TableHeader>
           <TableBody>
-            {productTable.getRowModel().rows.length ? (
-              productTable.getRowModel().rows.map((row) => (
+            {carouselTable.getRowModel().rows.length ? (
+              carouselTable.getRowModel().rows.map((row) => (
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
@@ -135,8 +97,7 @@ const DataTable = <TData extends { id: string }, TValue>({
         </Table>
       </div>
       <DataTablePagination
-        table={productTable}
-        label='sản phẩm'
+        table={carouselTable}
         isLoading={isLoading}
         onClick={() =>
           setPopupOpen({

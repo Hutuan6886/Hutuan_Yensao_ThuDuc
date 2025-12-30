@@ -69,3 +69,38 @@ export async function POST(req: NextRequest) {
     );
   }
 }
+
+export async function DELETE(req: NextRequest) {
+  const { blogId } = await req.json();
+  if (!Array.isArray(blogId) || blogId.length === 0) {
+    return NextResponse.json({ error: "Missing blog ids" }, { status: 400 });
+  }
+  const blogs = await prisma.blog.findMany({
+    where: { id: { in: blogId } },
+    select: {
+      thumbnail: true,
+    },
+  });
+  const arrayThumbnailsNeedToDelete:string[] = []
+  for(const blog of blogs){
+    if(blog.thumbnail) arrayThumbnailsNeedToDelete.push(blog.thumbnail.href)
+  }
+  try {
+    await prisma.$transaction(async (tx) => {
+      await tx.blog.deleteMany({
+        where: {
+          id: { in: blogId },
+        },
+      });
+    });
+    backgroundJob(async () => {
+      await Promise.all(arrayThumbnailsNeedToDelete.map((img) => deleteImage(img)));
+    });
+    return NextResponse.json({ success: true }, { status: 200 });
+  } catch (error) {
+    return NextResponse.json(
+      { error: (error as Error).message },
+      { status: 500 }
+    );
+  }
+}

@@ -17,7 +17,6 @@ const Tiptap: React.FC<TiptapProps> = ({ value, onChange }) => {
     extensions: [
       /*Stater kit */
       StarterKit.configure({
-        listItem: false,
         bulletList: {
           HTMLAttributes: {
             class: "list-disc ml-3",
@@ -25,7 +24,7 @@ const Tiptap: React.FC<TiptapProps> = ({ value, onChange }) => {
         },
         orderedList: {
           HTMLAttributes: {
-            class: "list-decimal ml-3",
+            class: "list-decimal ml-3 font-semibold",
           },
         },
       }),

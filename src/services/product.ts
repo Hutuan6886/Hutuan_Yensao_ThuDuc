@@ -71,7 +71,7 @@ export async function updateProduct(
   }
 }
 
-export async function DeleteProduct(
+export async function deleteProduct(
   id: string,
   signal?: AbortSignal
 ): Promise<boolean> {
@@ -107,7 +107,7 @@ export async function DeleteProduct(
   }
 }
 
-export async function DeleteProducts(
+export async function deleteProducts(
   ids: string[],
   signal?: AbortSignal
 ): Promise<boolean> {

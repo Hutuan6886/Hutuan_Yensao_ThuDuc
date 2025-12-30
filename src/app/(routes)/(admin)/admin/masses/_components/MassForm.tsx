@@ -18,6 +18,7 @@ import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { createMass, updateMass } from "@/services/mass";
 import useLoading from "@/hooks/useLoading";
+import FormContainer from "@/components/admin/Containers/FormContainer";
 
 interface MassFormProps {
   massData: Mass | null;
@@ -55,10 +56,7 @@ const MassForm: React.FC<MassFormProps> = ({ massData }) => {
   const { isLoading, run } = useLoading(onSubmit);
   return (
     <Form {...massForm}>
-      <form
-        onSubmit={massForm.handleSubmit(run)}
-        className="flex flex-col gap-8"
-      >
+      <FormContainer onSubmit={massForm.handleSubmit(run)}>
         <FormField
           control={massForm.control}
           name="value"
@@ -75,7 +73,7 @@ const MassForm: React.FC<MassFormProps> = ({ massData }) => {
         <Button disabled={isLoading} type="submit" className="cursor-pointer">
           {massData ? "Cập nhật" : "Tạo mới"}
         </Button>
-      </form>
+      </FormContainer>
     </Form>
   );
 };

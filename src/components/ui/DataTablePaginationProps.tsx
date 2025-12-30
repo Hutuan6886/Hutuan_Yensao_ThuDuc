@@ -16,13 +16,14 @@ import {
   ChevronsRight,
 } from "lucide-react";
 import ActionTableButton from "./ActionTableButton";
-import { DeleteProducts } from "@/services/product";
 import Popup from "./Popup";
 import { usePopup } from "@/stores/pop-up/usePopup";
-import useLoading from "@/hooks/useLoading";
 
 interface DataTablePaginationProps<TData> {
   table: Table<TData>;
+  label:string;
+  isLoading: boolean;
+  onClick: () => void;
 }
 const getPageNumbers = (current: number, total: number, delta = 2) => {
   const pages: (number | string)[] = [];
@@ -39,19 +40,14 @@ const getPageNumbers = (current: number, total: number, delta = 2) => {
 };
 export function DataTablePagination<TData extends { id: string }>({
   table,
+  label,
+  isLoading,
+  onClick,
 }: DataTablePaginationProps<TData>) {
   const { isPopupOpen, setPopupOpen, content, closePopup } = usePopup();
   const currentPage = table.getState().pagination.pageIndex + 1;
   const totalPages = table.getPageCount();
   const pages = getPageNumbers(currentPage, totalPages);
-
-  const handleDeleteMultipleRow = async () => {
-    const productsId: string[] = table
-      .getSelectedRowModel()
-      .rows.map((row) => row.original.id);
-    await DeleteProducts(productsId);
-  };
-  const { isLoading, run } = useLoading(handleDeleteMultipleRow);
   return (
     <>
       <Popup
@@ -65,16 +61,7 @@ export function DataTablePagination<TData extends { id: string }>({
       <div className="flex items-center justify-between px-2">
         <div className="flex flex-row items-center gap-2">
           {table.getSelectedRowModel().rows.length ? (
-            <ActionTableButton
-              variant="delete"
-              onClick={() =>
-                setPopupOpen({
-                  title: "Bạn chắc chắn muốn xóa những sản phẩm đã chọn?",
-                  message: "Những sản phẩm này sẽ bị xóa vĩnh viễn",
-                  submitPopup: async () => run(),
-                })
-              }
-            >
+            <ActionTableButton variant="delete" onClick={onClick}>
               Xóa tất cả
             </ActionTableButton>
           ) : (
@@ -82,12 +69,12 @@ export function DataTablePagination<TData extends { id: string }>({
           )}
           <div className="text-muted-foreground flex-1 text-sm">
             {table.getFilteredSelectedRowModel().rows.length} trong{" "}
-            {table.getFilteredRowModel().rows.length} sản phẩm.
+            {table.getFilteredRowModel().rows.length} {label}.
           </div>
         </div>
         <div className="flex items-center space-x-6 lg:space-x-8">
           <div className="flex items-center space-x-2">
-            <p className="text-sm font-medium">Sản phẩm trên trang</p>
+            <p className="text-sm font-medium">{label} trên trang</p>
             <Select
               value={`${table.getState().pagination.pageSize}`}
               onValueChange={(value) => {

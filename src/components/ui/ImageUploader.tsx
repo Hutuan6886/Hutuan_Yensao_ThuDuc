@@ -9,6 +9,7 @@ import CloseButton from "./CloseButton";
 import { usePopup } from "@/stores/pop-up/usePopup";
 import Popup from "./Popup";
 import { CloudUpload } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 export function ImageUploader({
   value,
@@ -18,6 +19,7 @@ export function ImageUploader({
   value?: { id: string; href: string; alt: string } | null;
   uploadToFolderName: string;
   onUploaded: (id: string, href: string, alt: string) => void;
+  imageClassName?: string;
 }) {
   const { ref: uploadRef, trigger: openUpload } =
     useClickTrigger<HTMLInputElement>();
@@ -107,7 +109,7 @@ export function ImageUploader({
           closePopup();
         }}
       />
-      <div className="space-y-2">
+      <div className="space-y-2 m-auto">
         {uploading && <p className="text-sm text-gray-500">Đang upload...</p>}
         {value?.href ? (
           <div className="relative">
@@ -116,7 +118,7 @@ export function ImageUploader({
               alt={value?.alt as string}
               width={1200}
               height={900}
-              className="w-full rounded-md"
+              className="w-full"
             />
             <CloseButton
               className="absolute top-2 right-2"

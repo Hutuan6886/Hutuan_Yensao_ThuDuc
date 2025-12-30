@@ -20,21 +20,19 @@ import {
 } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 import { DataTablePagination } from "@/components/ui/DataTablePaginationProps";
-import { deleteProducts } from "@/services/product";
-import useLoading from "@/hooks/useLoading";
 import { usePopup } from "@/stores/pop-up/usePopup";
+import { deleteBlogs } from "@/services/blog";
+import useLoading from "@/hooks/useLoading";
 import { useRouter } from "next/navigation";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
-  activeFilterColumn: string;
 }
 
 const DataTable = <TData extends { id: string }, TValue>({
   columns,
   data,
-  activeFilterColumn,
 }: DataTableProps<TData, TValue>) => {
   const router = useRouter()
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -43,7 +41,7 @@ const DataTable = <TData extends { id: string }, TValue>({
   );
   const [rowSelection, setRowSelection] = useState({});
 
-  const productTable = useReactTable({
+  const blogTable = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
@@ -60,36 +58,30 @@ const DataTable = <TData extends { id: string }, TValue>({
   });
   const { setPopupOpen } = usePopup();
   const handleDeleteMultipleRow = async () => {
-    const productsId: string[] = productTable
-      .getSelectedRowModel()
-      .rows.map((row) => row.original.id);
-    await deleteProducts(productsId);
-    router.refresh();
-  };
-  const { isLoading, run } = useLoading(handleDeleteMultipleRow);
+      const productsId: string[] = blogTable
+        .getSelectedRowModel()
+        .rows.map((row) => row.original.id);
+      await deleteBlogs(productsId);
+      router.refresh();
+    };
+    const { isLoading, run } = useLoading(handleDeleteMultipleRow);
 
   return (
     <div className="flex flex-col gap-6">
       <Input
-        placeholder={`Lọc theo ${
-          activeFilterColumn === "label" ? "tên sản phẩm" : "danh mục sản phẩm"
-        }...`}
+        placeholder="Lọc theo tên bài viết..."
         value={
-          (productTable
-            .getColumn(activeFilterColumn)
-            ?.getFilterValue() as string) ?? ""
+          (blogTable.getColumn("title")?.getFilterValue() as string) ?? ""
         }
         onChange={(event) =>
-          productTable
-            .getColumn(activeFilterColumn)
-            ?.setFilterValue(event.target.value)
+          blogTable.getColumn("title")?.setFilterValue(event.target.value)
         }
         className="max-w-sm"
       />
       <div className="overflow-hidden rounded-md border">
         <Table>
           <TableHeader>
-            {productTable.getHeaderGroups().map((headerGroup) => (
+            {blogTable.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
                   <TableHead key={header.id}>
@@ -105,8 +97,8 @@ const DataTable = <TData extends { id: string }, TValue>({
             ))}
           </TableHeader>
           <TableBody>
-            {productTable.getRowModel().rows.length ? (
-              productTable.getRowModel().rows.map((row) => (
+            {blogTable.getRowModel().rows.length ? (
+              blogTable.getRowModel().rows.map((row) => (
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
@@ -134,18 +126,15 @@ const DataTable = <TData extends { id: string }, TValue>({
           </TableBody>
         </Table>
       </div>
-      <DataTablePagination
-        table={productTable}
-        label='sản phẩm'
-        isLoading={isLoading}
+      <DataTablePagination table={blogTable} label="bài viết" 
+      isLoading={isLoading}
         onClick={() =>
           setPopupOpen({
-            title: "Bạn chắc chắn muốn xóa những sản phẩm đã chọn?",
-            message: "Những sản phẩm này sẽ bị xóa vĩnh viễn",
+            title: "Bạn chắc chắn muốn xóa những bài viết đã chọn?",
+            message: "Những bài viết này sẽ bị xóa vĩnh viễn",
             submitPopup: async () => run(),
           })
-        }
-      />
+        }/>
     </div>
   );
 };

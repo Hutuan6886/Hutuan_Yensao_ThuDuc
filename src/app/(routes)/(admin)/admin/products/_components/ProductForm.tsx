@@ -24,6 +24,7 @@ import DescriptionField from "./DescriptionField";
 import { createProduct, updateProduct } from "@/services/product";
 import { useRouter } from "next/navigation";
 import useLoading from "@/hooks/useLoading";
+import FormContainer from "@/components/admin/Containers/FormContainer";
 
 interface ProductFormProps {
   categories: CategoryType[];
@@ -52,10 +53,12 @@ const ProductForm: React.FC<ProductFormProps> = ({
     if (!product) {
       await createProduct(data).then(() => {
         router.push("/admin/products");
+        router.refresh();
       });
     } else {
       await updateProduct(product.id, data).then(() => {
         router.push("/admin/products");
+        router.refresh();
       });
     }
   };
@@ -63,10 +66,7 @@ const ProductForm: React.FC<ProductFormProps> = ({
   console.log("product form", productForm.watch());
   return (
     <Form {...productForm}>
-      <form
-        onSubmit={productForm.handleSubmit(run)}
-        className="flex flex-col gap-16"
-      >
+      <FormContainer onSubmit={productForm.handleSubmit(run)}>
         <FormField
           control={productForm.control}
           name="label"
@@ -173,7 +173,7 @@ const ProductForm: React.FC<ProductFormProps> = ({
         <Button disabled={isLoading} type="submit" className="cursor-pointer">
           {product ? "Cập nhật" : "Tạo mới"}
         </Button>
-      </form>
+      </FormContainer>
     </Form>
   );
 };

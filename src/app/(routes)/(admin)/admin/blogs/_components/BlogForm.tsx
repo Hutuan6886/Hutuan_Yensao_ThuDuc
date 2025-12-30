@@ -20,6 +20,7 @@ import { Input } from "@/components/ui/input";
 import { BlogType } from "@/types";
 import { createBlog, updateBlog } from "@/services/blog";
 import { useRouter } from "next/navigation";
+import FormContainer from "@/components/admin/Containers/FormContainer";
 
 interface BlogFormProps {
   blogData: BlogType | null;
@@ -40,38 +41,25 @@ const BlogForm: React.FC<BlogFormProps> = ({ blogData }) => {
     if (!blogData)
       await createBlog(data).then(() => {
         router.push("/admin/blogs");
+        router.refresh();
       });
     else
       await updateBlog(blogData.id, data).then(() => {
         router.push("/admin/blogs");
+        router.refresh();
       });
   };
   const { isLoading, run } = useLoading(onSubmit);
 
   return (
     <Form {...blogForm}>
-      <form
-        onSubmit={blogForm.handleSubmit(run)}
-        className="flex flex-col gap-8"
-      >
-        <FormField
-          control={blogForm.control}
-          name="title"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="font-semibold">Tiêu đề bài viết</FormLabel>
-              <FormControl>
-                <Input {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+      <FormContainer onSubmit={blogForm.handleSubmit(run)}>
         <FormField
           control={blogForm.control}
           name="thumbnail"
           render={({ field }) => (
             <FormItem>
+              <FormLabel className="font-semibold">Hình ảnh bài viết</FormLabel>
               <FormControl>
                 <ImageUploader
                   value={field.value} // chứa {href, alt}, có thể dùng để hiển thị preview
@@ -80,7 +68,21 @@ const BlogForm: React.FC<BlogFormProps> = ({ blogData }) => {
                     // ✅ Khi upload xong, cập nhật form
                     field.onChange({ id, href, alt });
                   }}
+                  imageClassName="size-auto"
                 />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={blogForm.control}
+          name="title"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="font-semibold">Tiêu đề bài viết</FormLabel>
+              <FormControl>
+                <Input {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -105,7 +107,7 @@ const BlogForm: React.FC<BlogFormProps> = ({ blogData }) => {
         <Button disabled={isLoading} type="submit" className="cursor-pointer">
           {blogData ? "Cập nhật" : "Tạo mới"}
         </Button>
-      </form>
+      </FormContainer>
     </Form>
   );
 };

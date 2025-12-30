@@ -3,6 +3,7 @@ import { getCarousels } from "@/servers/carousel";
 import { CarouselType } from "@/types";
 import CarouselsList from "./_components/CarouselsList";
 import LabelAndCreateBtn from "@/components/admin/LabelOfPage/LabelAndCreateBtn";
+import DataTableWrapper from "./_table/DataTableWrapper";
 const CarouselsPage = async () => {
   const data: CarouselType[] = await getCarousels();
   return (
@@ -12,7 +13,8 @@ const CarouselsPage = async () => {
         btnName="Thêm ảnh bìa"
         btnHref="/admin/carousels/new"
       />
-      <CarouselsList data={data} />
+      {/* <CarouselsList data={data} /> */}
+      <DataTableWrapper data={data} />
     </div>
   );
 };

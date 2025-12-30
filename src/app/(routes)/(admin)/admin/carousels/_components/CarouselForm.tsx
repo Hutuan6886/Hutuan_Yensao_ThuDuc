@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { ImageUploader } from "@/components/ui/ImageUploader";
+import FormContainer from "@/components/admin/Containers/FormContainer";
 
 interface CarouselFormProps {
   carouselData: CarouselType | null;
@@ -42,20 +43,21 @@ const CarouselForm: React.FC<CarouselFormProps> = ({ carouselData }) => {
   });
   const onSubmit = async (data: z.infer<typeof carouselFormSchema>) => {
     if (!carouselData)
-      await createCarousel(data).finally(() => router.push("/admin/carousels"));
+      await createCarousel(data).finally(() => {
+        router.push("/admin/carousels");
+        router.refresh();
+      });
     else
-      await updateCarousel(carouselData.id, data).finally(() =>
-        router.push("/admin/carousels")
-      );
+      await updateCarousel(carouselData.id, data).finally(() => {
+        router.push("/admin/carousels");
+        router.refresh();
+      });
   };
   const { isLoading, run } = useLoading(onSubmit);
 
   return (
     <Form {...carouselForm}>
-      <form
-        onSubmit={carouselForm.handleSubmit(run)}
-        className="flex flex-col gap-8"
-      >
+      <FormContainer onSubmit={carouselForm.handleSubmit(run)}>
         <FormField
           disabled={isLoading}
           control={carouselForm.control}
@@ -103,7 +105,7 @@ const CarouselForm: React.FC<CarouselFormProps> = ({ carouselData }) => {
         <Button disabled={isLoading} type="submit" className="cursor-pointer">
           {carouselData ? "Cập nhật" : "Tạo mới"}
         </Button>
-      </form>
+      </FormContainer>
     </Form>
   );
 };

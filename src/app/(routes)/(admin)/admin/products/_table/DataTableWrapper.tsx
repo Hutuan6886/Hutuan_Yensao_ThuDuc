@@ -1,12 +1,12 @@
 "use client";
 import React, { useRef, useState } from "react";
 import { ProductType } from "@/types";
-import { columns } from "../_table/columns";
-import DataTable from "../_table/data-table";
+import { columns } from "./columns";
+import DataTable from "./data-table";
 import Popup from "@/components/ui/Popup";
 import { usePopup } from "@/stores/pop-up/usePopup";
 import useLoading from "@/hooks/useLoading";
-import { DeleteProduct } from "@/services/product";
+import { deleteProduct } from "@/services/product";
 import { useRouter } from "next/navigation";
 
 interface DataTableWrapperProps {
@@ -28,7 +28,7 @@ const DataTableWrapper: React.FC<DataTableWrapperProps> = ({ data }) => {
   };
   const cols = columns({ setActiveFilterColumn, onEdit, onDelete });
   const handleDelete = async (signal?: AbortSignal) => {
-    await DeleteProduct(itemId.current as string, signal);
+    await deleteProduct(itemId.current as string, signal);
     router.refresh();
   };
   const { isLoading, run, cancelRequest } = useLoading(handleDelete);

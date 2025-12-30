@@ -109,7 +109,7 @@ export async function DELETE(
       return NextResponse.json({ error: "Blog not found" }, { status: 404 });
     }
     // Delete carousel and image of carousel (Xóa Carousel trước mới xóa image bởi vì Carousel vẫn đang referencing imageId)
-    await prisma.carousel.delete({ where: { id: blogId } });
+    await prisma.blog.delete({ where: { id: blogId } });
     backgroundJob(async () => {
       // Delete Image Cloudflare
       await deleteImage(existing.thumbnail!.href);
