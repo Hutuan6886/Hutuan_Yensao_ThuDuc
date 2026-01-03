@@ -63,7 +63,6 @@ const ProductForm: React.FC<ProductFormProps> = ({
     }
   };
   const { isLoading, run } = useLoading(onSubmit);
-  console.log("product form", productForm.watch());
   return (
     <Form {...productForm}>
       <FormContainer onSubmit={productForm.handleSubmit(run)}>

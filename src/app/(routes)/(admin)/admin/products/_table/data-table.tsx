@@ -10,6 +10,10 @@ import {
   SortingState,
   useReactTable,
 } from "@tanstack/react-table";
+import { useRouter } from "next/navigation";
+import useLoading from "@/hooks/useLoading";
+import { usePopup } from "@/stores/pop-up/usePopup";
+import { deleteProducts } from "@/services/product";
 import {
   Table,
   TableBody,
@@ -20,10 +24,6 @@ import {
 } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 import { DataTablePagination } from "@/components/ui/DataTablePaginationProps";
-import { deleteProducts } from "@/services/product";
-import useLoading from "@/hooks/useLoading";
-import { usePopup } from "@/stores/pop-up/usePopup";
-import { useRouter } from "next/navigation";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
