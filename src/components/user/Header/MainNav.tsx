@@ -3,67 +3,32 @@ import React, { Fragment, useState } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
-import { CategoryType } from "@/types";
+// import { CategoryType } from "@/types";
 import useToggle from "@/hooks/useToggle";
 import useSize from "@/hooks/useSize";
 import { ChevronDown } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
+import { NavType } from ".";
 
 interface MainNavProps {
-  categories: CategoryType[];
+  navData: NavType[];
   className?: string;
 }
-const MainNav: React.FC<MainNavProps> = ({ categories, className }) => {
-  const navDefault = [
-    {
-      name: "Danh Mục Sản Phẩm",
-      normalizedName: "categories",
-      children: categories,
-    },
-    {
-      name: "Giới Thiệu",
-      normalizedName: "about-us",
-    },
-    {
-      name: "Cẩm Nang Yến Sào",
-      normalizedName: "useful-articles",
-    },
-    {
-      name: "Bài Viết",
-      normalizedName: "blogs",
-    },
-    {
-      name: "Liên Hệ",
-      normalizedName: "contact",
-    },
-  ];
+const MainNav: React.FC<MainNavProps> = ({ navData, className }) => {
+  //todo: state clientWidth
+  const { clientWidth } = useSize();
   //todo: state dropdown
   const [activeDropdown, setActiveDropdown] = useState<number | undefined>(
     undefined
   );
-  //todo: Open or close dropdown
-  const { isOpen, setIsOpen } = useToggle();
-  //todo: state clientWidth
-  const { clientWidth } = useSize();
-
-  //todo: handle open dropdown for mobile screen
-  const handleClickNavForMobile = (e: React.MouseEvent<HTMLDivElement>) => {
-    e.stopPropagation();
-    const i = Number(e.currentTarget.getAttribute("aria-valuenow"));
-    if (!isOpen) {
-      setActiveDropdown(i);
-    } else {
-      setActiveDropdown(undefined);
-    }
-    setIsOpen(!isOpen);
-  };
 
   return (
     <div className={cn("w-full h-auto py-5", className)}>
       <div className="flex flex-row items-center justify-center md:gap-x-10 lg:gap-x-15 xl:gap-x-20">
-        {navDefault.map((navItem, i: number) => (
+        {navData.map((navItem, i: number) => (
           <Fragment key={i}>
-            <div className="relative flex flex-row items-center justify-center md:gap-x-5 xl:gap-x-10 
+            <div
+              className="relative flex flex-row items-center justify-center md:gap-x-5 xl:gap-x-10 
                                             group"
               onMouseEnter={() => setActiveDropdown(i)}
               onMouseLeave={() => setActiveDropdown(undefined)}
@@ -85,7 +50,6 @@ const MainNav: React.FC<MainNavProps> = ({ categories, className }) => {
                 <div
                   className="w-fit h-fit"
                   aria-valuenow={i}
-                  onClick={handleClickNavForMobile}
                 >
                   <ChevronDown
                     className={`${
@@ -124,7 +88,9 @@ const MainNav: React.FC<MainNavProps> = ({ categories, className }) => {
                           </Link>
                           <Separator
                             className={`${
-                              i === navItem.children!.length - 1 ? "hidden" : "block"
+                              i === navItem.children!.length - 1
+                                ? "hidden"
+                                : "block"
                             }`}
                           />
                         </Fragment>

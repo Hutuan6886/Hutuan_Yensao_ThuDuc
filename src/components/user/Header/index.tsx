@@ -1,30 +1,50 @@
 "use client";
 import React, { useRef } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import useSize from "@/hooks/useSize";
 import useScrollNav from "@/hooks/useScrollNav";
-import { motion, useTransform, useSpring } from "framer-motion";
-// import NavbarModal from '@/components/Modals/NavbarModal'
-
-import Image from "next/image";
-// import useMobileClickOutside from './services/useMobileClickOutside'
 import { CategoryType } from "@/types";
 import MainNav from "./MainNav";
-import NavButton from "./NavButton";
+import NavMobile from "./NavMobile";
 
+export type NavType = {
+  name: string;
+  normalizedName: string;
+  children?: CategoryType[];
+};
 interface HeaderProps {
   categories: CategoryType[];
 }
 const Header: React.FC<HeaderProps> = ({ categories }) => {
+  const navData = [
+    {
+      name: "Danh Mục Sản Phẩm",
+      normalizedName: "categories",
+      children: categories,
+    },
+    {
+      name: "Giới Thiệu",
+      normalizedName: "about-us",
+    },
+    {
+      name: "Cẩm Nang Yến Sào",
+      normalizedName: "useful-articles",
+    },
+    {
+      name: "Bài Viết",
+      normalizedName: "blogs",
+    },
+    {
+      name: "Liên Hệ",
+      normalizedName: "contact",
+    },
+  ];
   //todo: DOM ref
-  const navbarMobileRef = useRef<HTMLDivElement>(null);
   const imageRef = useRef<HTMLImageElement>(null);
-
   const { clientWidth } = useSize();
   //todo: Navbar animation when scrolling window
   const [isFixedNav] = useScrollNav(imageRef, clientWidth);
-  // todo: Navbar Mobile click outside
-  // const [isOpenNavbarModal, setIsOpenNavbarModal] = useMobileClickOutside(navbarMobileRef)
 
   return (
     <nav className="w-full h-fit bg-white">
@@ -51,7 +71,6 @@ const Header: React.FC<HeaderProps> = ({ categories }) => {
           </Link>
         </div>
         <div
-          ref={navbarMobileRef}
           className={`${
             isFixedNav || clientWidth < 769
               ? "fixed z-20 top-0 left-0 w-full h-auto bg-white/95"
@@ -59,16 +78,10 @@ const Header: React.FC<HeaderProps> = ({ categories }) => {
           } shadow-2xl transition-all`}
         >
           {clientWidth < 769 ? (
-            <NavButton />
+            <NavMobile navData={navData} />
           ) : (
-            <MainNav
-              categories={categories}
-              className={`${clientWidth < 769 ? "hidden" : "block"}`}
-            />
+            <MainNav navData={navData} />
           )}
-          {/* {
-                        isOpenNavbarModal && <NavbarModal dataNav={mainNav} onClose={() => setIsOpenNavbarModal(false)} />
-                    } */}
         </div>
       </div>
     </nav>

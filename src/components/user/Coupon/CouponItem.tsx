@@ -35,13 +35,13 @@ const CouponItem: React.FC<CouponItemProps> = ({ data, className }) => {
             HSD: {data.expiresOn}
           </span>
         </div>
-        <div
-          className="absolute z-20 top-0 right-0 translate-x-1/2 -translate-y-1/2 
-                        size-8 flex flex-col items-center justify-center
-                        bg-red-400 text-white font-semibold rounded-full shadow-md"
+        <span
+          className="absolute top-0 right-0 translate-x-1/2 -translate-y-1/2 
+                        size-6 flex flex-col items-center justify-center
+                        bg-red-500 text-white text-xs font-semibold rounded-full shadow-md"
         >
           {data.totalQuantity}
-        </div>
+        </span>
       </div>
     </div>
   );
