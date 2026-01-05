@@ -13,7 +13,7 @@ const info = {
 };
 const HighlightedInfo = () => {
   return (
-    <div className="w-full h-screen flex flex-col gap-5 md:gap-10">
+    <div className="w-full h-auto flex flex-col gap-5 md:gap-10">
       <div className="w-full aspect-[20/5] bg-[url(/images/background-ads.png)] bg-cover bg-center"></div>
       <div className="w-[90%] sm:w-[80%] flex flex-row items-center justify-between gap-10 m-auto">
         <div className="flex flex-col items-start gap-4">
@@ -29,7 +29,7 @@ const HighlightedInfo = () => {
             variant="inverse"
             isShowIcon={true}
             redirectTo={info.href}
-            className="py-2 px-3 text-xs md:py-2 md:px-4 md:text-base"
+            className="py-2 px-3 text-xs md:py-2 md:px-4 md:text-sm"
           >
             Xem thêm
           </ProductItemButton>

@@ -32,7 +32,7 @@ const ProductItem: React.FC<ProductItemProps> = React.forwardRef<
       />
       <div className="w-full h-auto flex flex-col gap-4 p-5">
         <h3 className="font-semibold text-[#613613] text-sm! xl:text-base!">{data.label}</h3>
-        <div className="flex flex-col gap-2 text-xs md:text-sm xl:text-base">
+        <div className="hidden xl:flex xl:flex-col xl:gap-2">
           {notionShow.map((item) => (
             <div
               key={item.id}
@@ -54,7 +54,7 @@ const ProductItem: React.FC<ProductItemProps> = React.forwardRef<
             )}
           </p>
         </div>
-        <div className="flex flex-row items-center justify-center gap-6">
+        <div className="flex flex-row items-center justify-center gap-3 sm:gap-4 xl:gap-5">
           <ProductItemButton variant="primary" redirectTo="" className="text-nowrap py-2 px-3 lg:py-2 lg:px-4 text-xs md:text-sm xl:text-base">
             Chi tiết
           </ProductItemButton>

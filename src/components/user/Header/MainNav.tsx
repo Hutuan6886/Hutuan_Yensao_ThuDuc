@@ -21,86 +21,79 @@ const MainNav: React.FC<MainNavProps> = ({ navData, className }) => {
   const [activeDropdown, setActiveDropdown] = useState<number | undefined>(
     undefined
   );
+  const toggleDropdown = (index: number) => {
+    setActiveDropdown((prev) => (prev === index ? undefined : index));
+  };
 
   return (
     <div className={cn("w-full h-auto py-5", className)}>
       <div className="flex flex-row items-center justify-center md:gap-x-10 lg:gap-x-15 xl:gap-x-20">
-        {navData.map((navItem, i: number) => (
-          <Fragment key={i}>
+        {navData.map((navItem, i: number) => {
+          const hasChildren = !!navItem.children?.length;
+
+          return (
             <div
-              className="relative flex flex-row items-center justify-center md:gap-x-5 xl:gap-x-10 
-                                            group"
-              onMouseEnter={() => setActiveDropdown(i)}
-              onMouseLeave={() => setActiveDropdown(undefined)}
+              key={i}
+              className="relative flex items-center gap-2 group"
+              onMouseEnter={() => clientWidth >= 1024 && setActiveDropdown(i)}
+              onMouseLeave={() =>
+                clientWidth >= 1024 && setActiveDropdown(undefined)
+              }
             >
+              {/* TEXT LINK */}
               <Link
                 href={`/${navItem.normalizedName}`}
-                className="flex flex-row items-center justify-start gap-1 group"
+                className="font-semibold text-[#613613] hover:text-[#c62101] transition"
               >
-                <p
-                  className={`${
-                    clientWidth > 769 && clientWidth < 904
-                      ? "text-[0.9rem] tracking-0"
-                      : "text-[1.05rem] tracking-[.06rem]"
-                  }  font-semibold 
-                     text-[#613613] transition cursor-pointer`}
-                >
-                  {navItem.name}
-                </p>
-                <div
-                  className="w-fit h-fit"
-                  aria-valuenow={i}
+                {navItem.name}
+              </Link>
+              {/* ICON CLICK */}
+              {hasChildren && (
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    toggleDropdown(i);
+                  }}
+                  aria-expanded={activeDropdown === i}
+                  className="p-1"
                 >
                   <ChevronDown
-                    className={`${
-                      navItem.children?.length !== undefined
-                        ? "block"
-                        : "hidden"
-                    } 
-                    size-3 lg:size-4 text-[#613613]
-                    group-hover:-rotate-180 
-                    group-hover:text-[#c62101] duration-300 transition-all`}
+                    className={cn(
+                      "text-[#613613] transition-transform duration-300",
+                      activeDropdown === i && "-rotate-180 text-[#c62101]"
+                    )}
+                    size={16}
                   />
-                </div>
-              </Link>
-              {/* //todo: Dropdown */}
-              {activeDropdown === i &&
-                navItem.children?.length !== undefined && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 15 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: 15 }}
-                    className={`w-[200px] h-fit  
-                                absolute z-10 top-6 left-0
-                                bg-transparent pt-3`}
-                  >
-                    <div
-                      className="flex flex-col items-start gap-4 
-                                 bg-white shadow-xl p-5"
-                    >
-                      {navItem.children?.map((subNavItem, i) => (
-                        <Fragment key={subNavItem.id}>
-                          <Link
-                            href={`/${navItem.normalizedName}/${subNavItem.normalizedName}`}
-                            className="text-zinc-600 hover:text-[#613613] cursor-pointer transition"
-                          >
-                            {subNavItem.name}
-                          </Link>
-                          <Separator
-                            className={`${
-                              i === navItem.children!.length - 1
-                                ? "hidden"
-                                : "block"
-                            }`}
-                          />
-                        </Fragment>
-                      ))}
-                    </div>
-                  </motion.div>
-                )}
+                </button>
+              )}
+              {/* DROPDOWN */}
+              {activeDropdown === i && hasChildren && (
+                <motion.div
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 12 }}
+                  className="absolute top-6 left-0 z-20 pt-3"
+                >
+                  <div className="bg-white shadow-xl p-5 w-[200px] flex flex-col gap-4">
+                    {navItem.children!.map((sub, idx) => (
+                      <Fragment key={sub.id}>
+                        <Link
+                          href={`/${navItem.normalizedName}/${sub.normalizedName}`}
+                          className="text-zinc-600 hover:text-[#613613] transition"
+                        >
+                          {sub.name}
+                        </Link>
+                        {idx !== navItem.children!.length - 1 && <Separator />}
+                      </Fragment>
+                    ))}
+                  </div>
+                </motion.div>
+              )}
             </div>
-          </Fragment>
-        ))}
+          );
+        })}
       </div>
     </div>
   );

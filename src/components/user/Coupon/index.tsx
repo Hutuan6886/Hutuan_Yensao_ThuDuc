@@ -52,7 +52,7 @@ const Coupon = () => {
     <div className="w-[80%] h-auto m-auto py-5
                     flex flex-row items-center justify-start gap-10">
       {data.map((voucher) => (
-        <CouponItem key={voucher.id} data={voucher} className="flex-shrink-0 basis-full sm:basis-1 md:basis-1/2 lg:basis-1/3 xl:basis-1/4"/>
+        <CouponItem key={voucher.id} data={voucher} className="flex-shrink-0 basis-full sm:basis-1/2 lg:basis-1/3.5 xl:basis-1/4"/>
       ))}
     </div>
   );
