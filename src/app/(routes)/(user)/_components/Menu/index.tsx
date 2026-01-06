@@ -1,5 +1,5 @@
 import React from "react";
-import Commitment from "../../ui/Commitment";
+import Commitment from "../../../../../components/user/Commitment";
 import MenuTitle from "./MenuTitle";
 import MenuList from "./MenuList";
 

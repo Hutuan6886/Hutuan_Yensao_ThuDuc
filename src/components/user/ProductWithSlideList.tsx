@@ -1,6 +1,6 @@
 import React from "react";
 import { ProductType } from "@/types";
-import ProductItem from "./ProductItem";
+import ProductItem from "../user/ProductItem";
 
 interface ProductWithSlideListProps {
   data: ProductType[];

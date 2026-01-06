@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import Tiptap from "@/components/admin/Tiptap";
+import Tiptap from "@/app/(routes)/(admin)/_components/Tiptap";
 import z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";

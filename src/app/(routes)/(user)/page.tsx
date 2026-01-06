@@ -1,13 +1,12 @@
-import Carousel from "@/components/user/Carousel";
-import GiftBoxProducts from "@/components/user/GiftBoxProducts";
-import HighlightedInfo from "@/components/user/HighlightedInfo";
-import Menu from "@/components/user/Menu";
-import Coupon from "@/components/user/Coupon";
+import React, { Suspense } from "react";
 import { getCarousels } from "@/servers/carousel";
 import { getProducts } from "@/servers/product";
-import React, { Suspense } from "react";
-import TitleWrapper from "@/components/ui/TitleWrapper";
-import SlideWrapper from "@/components/ui/SlideWrapper";
+import Carousel from "@/app/(routes)/(user)/_components/Carousel";
+import GiftBoxProducts from "@/app/(routes)/(user)/_components/GiftBoxProducts";
+import HighlightedInfo from "@/app/(routes)/(user)/_components/HighlightedInfo";
+import Menu from "@/app/(routes)/(user)/_components/Menu";
+import Coupon from "@/app/(routes)/(user)/_components/Coupon";
+import HighlightedProducts from "./_components/HighlightedProducts";
 
 const HomePage = async () => {
   const [carousels, products] = await Promise.all([
@@ -23,12 +22,11 @@ const HomePage = async () => {
       <Suspense fallback={<div>Loading...</div>}>
         <GiftBoxProducts data={products} />
       </Suspense>
-      <TitleWrapper title="Mã giảm giá dành cho bạn">
-        <SlideWrapper className="w-[90%] m-auto">
-          <Coupon />
-        </SlideWrapper>
-      </TitleWrapper>
+      <Coupon />
       <HighlightedInfo />
+      <Suspense fallback={<div>Loading...</div>}>
+        <HighlightedProducts data={products} />
+      </Suspense>
     </div>
   );
 };

@@ -1,6 +1,6 @@
 import React from "react";
 import LayoutContainer from "@/components/admin/Containers/LayoutContainer";
-import Navbar from "@/components/admin/Navbar";
+import Navbar from "@/app/(routes)/(admin)/_components/Navbar";
 
 function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (

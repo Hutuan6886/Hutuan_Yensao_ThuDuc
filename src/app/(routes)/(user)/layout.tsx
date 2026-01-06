@@ -1,5 +1,5 @@
-import Footer from "@/components/user/Footer";
-import Header from "@/components/user/Header";
+import Footer from "@/app/(routes)/(user)/_components/Footer";
+import Header from "@/app/(routes)/(user)/_components/Header";
 import { getCategories } from "@/servers/category";
 import { CategoryType } from "@/types";
 

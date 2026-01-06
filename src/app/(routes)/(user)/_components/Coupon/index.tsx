@@ -1,5 +1,7 @@
 import React from "react";
 import CouponItem from "./CouponItem";
+import TitleWrapper from "@/components/user/TitleWrapper";
+import SlideWrapper from "@/components/user/SlideWrapper";
 
 const data = [
   {
@@ -49,12 +51,22 @@ export type CouponType = {
 };
 const Coupon = () => {
   return (
-    <div className="w-[80%] h-auto m-auto py-5
-                    flex flex-row items-center justify-start gap-10">
-      {data.map((voucher) => (
-        <CouponItem key={voucher.id} data={voucher} className="flex-shrink-0 basis-full sm:basis-1/2 lg:basis-1/3.5 xl:basis-1/4"/>
-      ))}
-    </div>
+    <TitleWrapper title="Mã giảm giá dành cho bạn">
+      <SlideWrapper className="w-[90%] m-auto">
+        <div
+          className="w-[90%] h-auto m-auto py-5
+                    flex flex-row items-center justify-start gap-10"
+        >
+          {data.map((voucher) => (
+            <CouponItem
+              key={voucher.id}
+              data={voucher}
+              className="flex-shrink-0 basis-full sm:basis-1/2 lg:basis-1/3 xl:basis-1/4"
+            />
+          ))}
+        </div>
+      </SlideWrapper>
+    </TitleWrapper>
   );
 };
 

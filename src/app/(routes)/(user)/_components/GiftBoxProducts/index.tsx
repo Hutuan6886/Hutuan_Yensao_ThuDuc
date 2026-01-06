@@ -1,9 +1,10 @@
 import React from "react";
 import Image from "next/image";
 import { ProductType } from "@/types";
-import ProductItemButton from "@/components/ui/ProductItemButton";
-import ProductWithSlideList from "@/components/ui/ProductWithSlideList";
-import SlideWrapper from "@/components/ui/SlideWrapper";
+import ProductItemButton from "@/components/user/ProductItemButton";
+import SlideWrapper from "@/components/user/SlideWrapper";
+import ProductWithSlideList from "@/components/user/ProductWithSlideList";
+import TitleWrapper from "@/components/user/TitleWrapper";
 
 interface GiftBoxProductsProps {
   data: ProductType[];
@@ -11,10 +12,7 @@ interface GiftBoxProductsProps {
 const GiftBoxProducts: React.FC<GiftBoxProductsProps> = ({ data }) => {
   const limitedData: ProductType[] = data.slice(0, 10);
   return (
-    <div
-      className="relative w-full h-auto bg-[url(/images/biatrungthu.jpg)] bg-cover bg-center pt-20 pb-10 md:pt-40 md:pb-20
-                flex flex-col items-center justify-center gap-5 md:gap-10"
-    >
+    <TitleWrapper className="relative bg-[url(/images/biatrungthu.jpg)] bg-cover bg-center pt-20 pb-10 md:pt-40 md:pb-20">
       <Image
         src="/images/roof.png"
         alt="roof-decor"
@@ -25,10 +23,15 @@ const GiftBoxProducts: React.FC<GiftBoxProductsProps> = ({ data }) => {
       <SlideWrapper className="w-[90%] m-auto">
         <ProductWithSlideList data={limitedData} />
       </SlideWrapper>
-      <ProductItemButton variant="link" isShowIcon={true} redirectTo="/admin" className="text-sm lg:text-base">
+      <ProductItemButton
+        variant="link"
+        isShowIcon={true}
+        redirectTo="/admin"
+        className="text-sm lg:text-base"
+      >
         Xem toàn bộ
       </ProductItemButton>
-    </div>
+    </TitleWrapper>
   );
 };
 

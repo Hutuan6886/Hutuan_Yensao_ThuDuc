@@ -1,6 +1,6 @@
 import React from "react";
 import Image from "next/image";
-import ProductItemButton from "@/components/ui/ProductItemButton";
+import ProductItemButton from "@/components/user/ProductItemButton";
 
 const info = {
   title: "NGÀN LÝ DO ĐỂ YÊN SAO THỦ ĐỨC TRỞ THÀNH NGƯỜI BẠN ĐỒNG HÀNH CỦA BẠN",
@@ -13,7 +13,7 @@ const info = {
 };
 const HighlightedInfo = () => {
   return (
-    <div className="w-full h-auto flex flex-col gap-5 md:gap-10">
+    <div className="w-full h-auto flex flex-col gap-5 md:gap-10 bg-[#FFF5E8]">
       <div className="w-full aspect-[20/5] bg-[url(/images/background-ads.png)] bg-cover bg-center"></div>
       <div className="w-[90%] sm:w-[80%] flex flex-row items-center justify-between gap-10 m-auto">
         <div className="flex flex-col items-start gap-4">

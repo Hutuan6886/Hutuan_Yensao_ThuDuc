@@ -17,6 +17,9 @@ const Tiptap: React.FC<TiptapProps> = ({ value, onChange }) => {
     extensions: [
       /*Stater kit */
       StarterKit.configure({
+        heading: {
+          levels: [2, 3, 4], 
+        },
         bulletList: {
           HTMLAttributes: {
             class: "list-disc ml-3",
