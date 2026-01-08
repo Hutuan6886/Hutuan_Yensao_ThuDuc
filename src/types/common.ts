@@ -70,3 +70,9 @@ export type ProductType = {
 export type BlogType = Blog & {
   thumbnail: Image | null;
 };
+
+export type SectionInfoType = {
+  title: string;
+  description: string[];
+  href: string;
+};

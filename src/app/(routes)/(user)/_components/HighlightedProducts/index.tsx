@@ -11,7 +11,7 @@ interface HighlightedProductsProps {
 const HighlightedProducts: React.FC<HighlightedProductsProps> = ({ data }) => {
   const limitedData: ProductType[] = data.slice(0, 20);
   return (
-    <TitleWrapper title="Sản phẩm nổi bật" className="bg-[#FFF5E8] bg-[url(/images/mountain-decor.png)] bg-cover bg-center">
+    <TitleWrapper title="SẢN PHẨM NỔI BẬT" className="bg-[#FFF5E8] bg-[url(/images/mountain-decor.png)] bg-cover bg-center">
       <SlideWrapper className="w-[90%] m-auto">
         <ProductWithSlideList data={limitedData} />
       </SlideWrapper>

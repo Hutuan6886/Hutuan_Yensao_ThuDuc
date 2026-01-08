@@ -51,7 +51,7 @@ export type CouponType = {
 };
 const Coupon = () => {
   return (
-    <TitleWrapper title="Mã giảm giá dành cho bạn">
+    <TitleWrapper title="MÃ GIẢM GIÁ DÀNH CHO BẠN">
       <SlideWrapper className="w-[90%] m-auto">
         <div
           className="w-[90%] h-auto m-auto py-5

@@ -3,7 +3,6 @@ import Image from "next/image";
 import { cn, formatterCurrency } from "@/lib/utils";
 import { ProductType } from "@/types";
 import ProductItemButton from "./ProductItemButton";
-import { Gem } from "lucide-react";
 
 interface ProductItemProps extends React.HTMLAttributes<HTMLDivElement> {
   data: ProductType;
@@ -36,14 +35,8 @@ const ProductItem: React.FC<ProductItemProps> = React.forwardRef<
         </h3>
         <div className="hidden xl:flex xl:flex-col xl:gap-2">
           {notionShow.map((item) => (
-            <div
-              key={item.id}
-              className="flex flex-row flex-nowrap items-center gap-1"
-            >
-              <div className="flex flex-row flex-nowrap items-center gap-1 font-semibold ">
-                <Gem className="size-3 text-[#bb8b63]" />
-                <p className="text-nowrap"> {item.title}</p>
-              </div>
+            <div key={item.id} className="flex flex-row justify-start items-center flex-nowrap gap-1">
+              <p className="whitespace-nowrap font-semibold"> {item.title}</p>
               <p className="truncate">{item.content}</p>
             </div>
           ))}

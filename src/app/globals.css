@@ -49,6 +49,20 @@ h3 {
 h4 {
   @apply text-lg;
 }
+/* Chrome / Safari */
+.gradient-text {
+  background: linear-gradient(to right, #603719, #c47856);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Firefox fallback */
+@-moz-document url-prefix() {
+  .gradient-text {
+    color: #c47856;
+    background: none;
+  }
+}
 
 @theme inline {
   --radius-sm: calc(var(--radius) - 4px);
