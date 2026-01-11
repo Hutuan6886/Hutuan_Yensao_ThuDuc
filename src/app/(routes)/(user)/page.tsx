@@ -9,7 +9,7 @@ import Coupon from "@/app/(routes)/(user)/_components/Coupon";
 import HighlightedProducts from "./_components/HighlightedProducts";
 import HarvestInfo from "./_components/HarvestInfo";
 import HighlightedBlogs from "./_components/HighlightedBlogs";
-
+import Certification from "./_components/Certification";
 
 const HomePage = async () => {
   const [carousels, products] = await Promise.all([
@@ -35,6 +35,9 @@ const HomePage = async () => {
       <HarvestInfo />
       <Suspense fallback={<div>Loading...</div>}>
         <HighlightedBlogs />
+      </Suspense>
+      <Suspense fallback={<div>Loading...</div>}>
+        <Certification />
       </Suspense>
     </div>
   );

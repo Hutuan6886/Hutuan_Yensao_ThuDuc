@@ -1,7 +1,7 @@
 import { useCallback, useState } from "react";
 
-export const useItemNavigator = (total: number) => {
-  const [index, setIndex] = useState(0);
+export const useItemNavigator = (total: number, InitialIndex?: number) => {
+  const [index, setIndex] = useState(InitialIndex || 0);
 
   const hasItems = total > 0;
 
